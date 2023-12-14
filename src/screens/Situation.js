@@ -1,173 +1,249 @@
-import React, { Component } from "react";
-import {Text, View, StyleSheet, ScrollView} from 'react-native'
-import { apontadorData, apontadorHead, apontadorWidthArr } from "../fonts";
-import { Table, Row, Rows } from 'react-native-table-component'
-import { VictoryAxis, VictoryBar, VictoryChart } from "victory-native";
+import React, {useState} from 'react';
+import {Text, View, StyleSheet, ScrollView} from 'react-native';
+import {
+	apontadorData,
+	apontadorHead,
+	apontadorWidthArr,
+} from '../fonts';
+import {Table, Row, Rows} from 'react-native-table-component';
+import {VictoryAxis, VictoryBar, VictoryChart} from 'victory-native';
+import {SelectList} from 'react-native-dropdown-select-list';
 
-export default class Situation extends Component {
+const Situation = () => {
+	const [state] = useState({
+		tableHead: apontadorHead,
+		tableData: apontadorData,
+		widthArr: apontadorWidthArr,
+	});
 
-	constructor(props) {
-		super(props)
-		this.state = {
-			tableHead: apontadorHead,
-			tableData: apontadorData,
-			widthArr: apontadorWidthArr
-		}
-	}
+	const [filteredData, setFilteredData] = useState(state.tableData);
+	const [selected, setSelected] = useState([]);
 
-	apontamentos = () => {
-		let apontamentos = []
-		for (let i = 0; i < this.state.tableData.length; i++) {
-			for (let j = 0; j < this.state.tableHead.length; j++) {
-				if(j === 2) apontamentos.push(this.state.tableData[i][j])
+	const apontamentos = filteredData => {
+		let apontamentos = [];
+		for (let i = 0; i < filteredData.length; i++) {
+			for (let j = 0; j < 4; j++) {
+				if (j === 3) apontamentos.push(filteredData[i][j]);
 			}
 		}
-		return apontamentos
-	}
+		return apontamentos;
+	};
 
-	tempo = () => {
-		let tempo = []
-		for (let i = 0; i < this.state.tableData.length; i++) {
-			for (let j = 0; j < this.state.tableHead.length; j++) {
-				if(j === 2) tempo.push(this.state.tableData[i][j])
+	const tempo = () => {
+		let tempo = [];
+		for (let i = 0; i < state.tableData.length; i++) {
+			for (let j = 0; j < state.tableHead.length; j++) {
+				if (j === 3) tempo.push(state.tableData[i][j]);
 			}
 		}
-		return tempo
-	}
+		return tempo;
+	};
 
-	render () {
-		const tableHead = ['Confirmado', 'Calculado', 'Exportado', 'Total']
-		const apontamentos = this.apontamentos().reduce((total, elemento) => total + elemento , 0)
-		const conf = apontamentos * 0.2
-		const calc = apontamentos* 0.1
-		const expt = apontamentos - conf - calc
-		const pExpt = expt / apontamentos * 100
-		const dataRow = [conf, calc, expt, apontamentos]
+	const wsList = () => {
+		const {tableData} = state;
+		const data = [{key: '', value: ''}];
+		tableData.forEach(item => {
+			const existingItem = data.find(obj => obj.value === item[0]);
+			if (!existingItem) {
+				data.push({key: item[0], value: item[0]});
+			}
+		});
+		return data;
+	};
 
+	const userList = () => {
+		const {tableData} = state;
+		const data = [];
+		tableData.forEach(item => {
+			const existingItem = data.find(obj => obj.value === item[2]);
+			if (!existingItem) {
+				data.push({key: item[1], value: item[2]});
+			}
+		});
+		return data;
+	};
 
-		return(
-			<ScrollView style={{backgroundColor:'#191013'}}>
-				<View style={styles.container}>
-					<Text style={styles.title}>Apontadores</Text>
-					<Table borderStyle={styles.table}>
-						<Row data={this.state.tableHead} style={styles.head} textStyle={styles.tableText}/>
-						<Rows data={this.state.tableData} textStyle={styles.tableText}/>
-					</Table>
+	const handleSelectCompany = value => {
+		setSelected(value);
+		if (value !== '') {
+			const newList = state.tableData.filter(item => item[0] === value);
+			setFilteredData(newList);
+			apontamentos(filteredData);
+		} else {
+			setFilteredData(state.tableData);
+			apontamentos(state.tableData);
+		}
+	};
 
-					<Text style={styles.title}>Geral</Text>
-					<Table borderStyle={styles.table}>
-						<Row data={tableHead} style={styles.head} textStyle={styles.tableText}/>
-						<Row data={dataRow} textStyle={styles.tableText}/>
-					</Table>
+	const tableHead = ['Confirmado', 'Calculado', 'Exportado', 'Total'];
+	const aponts = apontamentos(filteredData).reduce(
+		(total, elemento) => total + elemento,
+		0,
+	);
+   const random1 = Math.random() * 0.5
+   const random2 = Math.random() * 0.3
+	const conf = aponts * random1.toFixed(1);
+	const calc = aponts * random2.toFixed(1);
+	const expt = aponts - conf - calc;
+	const pExpt = (expt / aponts) * 100;
+	const dataRow = [conf, calc, expt, aponts];
 
-					<VictoryChart  domain={{x:[0 , 4]}} animate={{ duration: 2000 }}>
-						<VictoryAxis
-							style={{
-      						axis: { stroke: 'white' },
-      						ticks: { stroke: 'white' }, 
-      						tickLabels: { fill: 'white' }
-    						}}
-						/>
-						
-						<VictoryBar
-							data={[
-								{ x: "Confirmado", y: dataRow[0], fill: '#FF6347'},
-								{ x: "Calculado", y: dataRow[1], fill: '#4682B4'},
-								{ x: "Exportado", y: dataRow[2], fill: '#32CD32' },
-							]}
-							style={{
-								data: {
-								  fill: ({ datum }) => datum.fill,
-								},
-								labels: { 
-									fill: "white" 
-								}
-							 }}
-							 labels={({ datum }) => datum.y}
-						/>
-					</VictoryChart>
-					
-					<View style={styles.cards}>
-						<View style={[styles.card, {backgroundColor : pExpt >= 70 ? '#32CD32' : 'none'}]} >
-							<Text style={styles.cardTitle}>Dados Exportados</Text>
-							<Text style={styles.cardNumber} >{pExpt.toFixed(1)}%</Text>
-						</View>
-						<View style={styles.card} >
-							<Text style={styles.cardTitle}>Usuários</Text>
-							<Text style={styles.cardNumber}>{this.state.tableData.length}</Text>
-						</View>
-					</View>
+	return (
+		<ScrollView style={{backgroundColor: '#191013'}}>
+			<View style={styles.container}>
+				<Text style={styles.title}>Apontadores</Text>
 
+				<View style={styles.drop}>
+					<SelectList
+						data={wsList}
+						setSelected={val => handleSelectCompany(val)}
+						search={false}
+						placeholder="Empresas"
+						boxStyles={{
+							borderColor: 'white',
+							width: 150,
+							alignContent: 'center',
+						}}
+						inputStyles={{color: 'white'}}
+						dropdownTextStyles={{color: 'white'}}
+					/>
+					<SelectList
+						data={userList}
+						search={false}
+						placeholder="Usuário"
+						boxStyles={{
+							borderColor: 'white',
+							width: 150,
+							alignContent: 'center',
+						}}
+						inputStyles={{color: 'white'}}
+						dropdownTextStyles={{color: 'white'}}
+					/>
 				</View>
-				
-			</ScrollView>
-		)	
-	}
-}
+				<Table borderStyle={styles.table}>
+					<Row
+						data={state.tableHead}
+						style={styles.head}
+						textStyle={styles.tableText}
+					/>
+					<Rows data={filteredData} textStyle={styles.tableText} />
+				</Table>
+
+				<Text style={styles.title}>Geral</Text>
+				<Table borderStyle={styles.table}>
+					<Row
+						data={tableHead}
+						style={styles.head}
+						textStyle={styles.tableText}
+					/>
+					<Row data={dataRow} textStyle={styles.tableText} />
+				</Table>
+
+				<VictoryChart domain={{x: [0, 4]}}>
+					<VictoryAxis
+						style={{
+							axis: {stroke: 'white'},
+							ticks: {stroke: 'white'},
+							tickLabels: {fill: 'white'},
+						}}
+					/>
+					<VictoryAxis
+						dependentAxis
+						style={{
+							axis: {stroke: 'white'},
+							ticks: {stroke: 'white'},
+							tickLabels: {fill: 'white'},
+						}}
+					/>
+
+					<VictoryBar
+						animate={{duration: 2000, onLoad: {duration: 1000}}}
+						data={[
+							{x: 'Confirmado', y: dataRow[0], fill: '#FF6347'},
+							{x: 'Calculado', y: dataRow[1], fill: '#4682B4'},
+							{x: 'Exportado', y: dataRow[2], fill: '#32CD32'},
+						]}
+						style={{
+							data: {
+								fill: ({datum}) => datum.fill,
+							},
+							labels: {
+								fill: 'white',
+							},
+						}}
+						labels={({datum}) => datum.y.toFixed(0)}
+					/>
+				</VictoryChart>
+
+				<View style={styles.cards}>
+					<View
+						style={[
+							styles.card,
+							{backgroundColor: pExpt >= 70 ? '#32CD32' : 'red'},
+						]}>
+						<Text style={styles.cardTitle}>Dados Exportados</Text>
+						<Text style={styles.cardNumber}>{pExpt.toFixed(1)}%</Text>
+					</View>
+					<View style={styles.card}>
+						<Text style={styles.cardTitle}>Usuários</Text>
+						<Text style={styles.cardNumber}>{filteredData.length}</Text>
+					</View>
+				</View>
+			</View>
+		</ScrollView>
+	);
+};
+
+export default Situation;
 
 const styles = StyleSheet.create({
-	container:{
-		backgroundColor:'#191013',
-		flex:1
+	container: {
+		backgroundColor: '#191013',
+		flex: 1,
 	},
 	table: {
-		borderWidth:2,
+		borderWidth: 2,
 		borderColor: '#f4f4f2',
 	},
-	head:{
-		height:50,
+	head: {
+		height: 50,
 		backgroundColor: '#5b88a5',
 	},
-	tableText:{
-		textAlign:"center",
-		color:'#f4f4f2'
+	tableText: {
+		textAlign: 'center',
+		color: '#f4f4f2',
 	},
-	title:{
-		fontSize:20,
-		color:'#f4f4f4',
-		textAlign:"center",
-		padding: 20
+	title: {
+		fontSize: 20,
+		color: '#f4f4f4',
+		textAlign: 'center',
+		padding: 20,
 	},
-	cards:{
-		padding:20,
-		flexDirection:"row",
-		justifyContent:"space-evenly"
+	cards: {
+		padding: 20,
+		flexDirection: 'row',
+		justifyContent: 'space-evenly',
 	},
-	card:{
+	card: {
 		borderColor: '#5b88a5',
 		borderWidth: 1,
 		borderRadius: 15,
-		padding:10,
+		padding: 10,
 		width: 150,
-		
 	},
-	cardTitle:{
-		textAlign:"center",
+	cardTitle: {
+		textAlign: 'center',
 		fontSize: 10,
-		color: '#f4f4f4'
+		color: '#f4f4f4',
 	},
-	cardNumber:{
-		textAlign:"center",
+	cardNumber: {
+		textAlign: 'center',
 		fontSize: 25,
-		color:'#f4f4f4'
-	}
-
-
-})
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+		color: '#f4f4f4',
+	},
+	drop: {
+		flexDirection: 'row',
+		justifyContent: 'space-evenly',
+		marginBottom: 20,
+	},
+});

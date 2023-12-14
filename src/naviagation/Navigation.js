@@ -9,7 +9,7 @@ const Tab = createBottomTabNavigator();
 function MyTabs() {
   return (
    <NavigationContainer>
-      <Tab.Navigator initialRouteName='Empresas'
+      <Tab.Navigator initialRouteName='Apontamentos'
          screenOptions={({ route }) => ({
             tabBarIcon: ({ color, size }) => {
                let iconName;
