@@ -57,7 +57,7 @@ const Companies = () => {
 	const selectList = () => {
 		const {tableData} = state;
 		const data = [];
-      data.push({key: '', value: ''})
+      data.push({key: '', value: 'Empresas'})
 		tableData.forEach(item => {
 			const existingItem = data.find(obj => obj.value === item[1]);
 			if (!existingItem) {
@@ -202,7 +202,7 @@ const styles = StyleSheet.create({
 		color: commonStyles.colors.white,
 	},
 	table: {
-		borderWidth: 2,
+		borderWidth: 0.5,
 		borderColor: commonStyles.colors.white,
 	},
 	head: {

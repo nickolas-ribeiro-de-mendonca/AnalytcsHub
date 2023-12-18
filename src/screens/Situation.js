@@ -1,10 +1,6 @@
 import React, {useState} from 'react';
 import {Text, View, StyleSheet, ScrollView} from 'react-native';
-import {
-	apontadorData,
-	apontadorHead,
-	apontadorWidthArr,
-} from '../fonts';
+import {apontadorData, apontadorHead, apontadorWidthArr} from '../fonts';
 import {Table, Row, Rows} from 'react-native-table-component';
 import {VictoryAxis, VictoryBar, VictoryChart} from 'victory-native';
 import {SelectList} from 'react-native-dropdown-select-list';
@@ -18,9 +14,9 @@ const Situation = () => {
 	});
 
 	const [filteredData, setFilteredData] = useState(state.tableData);
-   const [filteredUser, setFilteredUser] = useState(state.tableData)
+	const [filteredUser, setFilteredUser] = useState(state.tableData);
 	const [selected, setSelected] = useState([]);
-   const [selectedUser, setSelectedUser] = useState([])
+	const [selectedUser, setSelectedUser] = useState([]);
 
 	const apontamentos = filteredData => {
 		let apontamentos = [];
@@ -55,7 +51,6 @@ const Situation = () => {
 	};
 
 	const userList = () => {
-      
 		const tableData = filteredUser;
 		const data = [{key: '', value: 'Usuários'}];
 		tableData.forEach(item => {
@@ -72,33 +67,32 @@ const Situation = () => {
 		if (value !== '') {
 			const newList = state.tableData.filter(item => item[0] === value);
 			setFilteredData(newList);
-         setFilteredUser(newList)
+			setFilteredUser(newList);
 			apontamentos(filteredData);
 		} else {
 			setFilteredData(state.tableData);
 			apontamentos(state.tableData);
-         
 		}
 	};
-   const handleSlectedUser = value => {
-      setSelectedUser(value)
-      if(value !== ''){
-         const newList = filteredUser.filter(item => item[1] === value)
-         setFilteredData(newList)
-         apontamentos(filteredData)
-      }else {
-         setFilteredData(filteredUser)
-         apontamentos(filteredUser)
-      }
-   }
+	const handleSlectedUser = value => {
+		setSelectedUser(value);
+		if (value !== '') {
+			const newList = filteredUser.filter(item => item[1] === value);
+			setFilteredData(newList);
+			apontamentos(filteredData);
+		} else {
+			setFilteredData(filteredUser);
+			apontamentos(filteredUser);
+		}
+	};
 
 	const tableHead = ['Confirmado', 'Calculado', 'Exportado', 'Total'];
 	const aponts = apontamentos(filteredData).reduce(
 		(total, elemento) => total + elemento,
 		0,
 	);
-   const random1 = Math.random() * 0.5
-   const random2 = Math.random() * 0.3
+	const random1 = Math.random() * 0.5;
+	const random2 = Math.random() * 0.3;
 	const conf = aponts * random1.toFixed(1);
 	const calc = aponts * random2.toFixed(1);
 	const expt = aponts - conf - calc;
@@ -106,7 +100,7 @@ const Situation = () => {
 	const dataRow = [conf, calc, expt, aponts];
 
 	return (
-		<ScrollView >
+		<ScrollView>
 			<View style={styles.container}>
 				<Text style={styles.title}>Apontadores</Text>
 
@@ -127,7 +121,7 @@ const Situation = () => {
 					<SelectList
 						data={userList}
 						search={false}
-                  setSelected={val => handleSlectedUser(val)}
+						setSelected={val => handleSlectedUser(val)}
 						placeholder="Usuário"
 						boxStyles={{
 							borderColor: 'white',
@@ -138,17 +132,21 @@ const Situation = () => {
 						dropdownTextStyles={{color: 'white'}}
 					/>
 				</View>
-            <View style={styles.tableContainer}>
-				   <Table borderStyle={styles.table} widthArr={state.widthArr}>
-				   	<Row
-				   		data={state.tableHead}
-				   		style={styles.head}
-				   		textStyle={styles.tableText}
-                     widthArr={state.widthArr}
-				   	/>
-				   	<Rows data={filteredData} textStyle={styles.tableText} widthArr={state.widthArr}/>
-				   </Table>
-            </View>
+				<View style={styles.tableContainer}>
+					<Table borderStyle={styles.table} widthArr={state.widthArr}>
+						<Row
+							data={state.tableHead}
+							style={styles.head}
+							textStyle={styles.tableText}
+							widthArr={state.widthArr}
+						/>
+						<Rows
+							data={filteredData}
+							textStyle={styles.tableText}
+							widthArr={state.widthArr}
+						/>
+					</Table>
+				</View>
 
 				<Text style={styles.title}>Geral</Text>
 				<Table borderStyle={styles.table}>
@@ -180,9 +178,21 @@ const Situation = () => {
 					<VictoryBar
 						animate={{duration: 2000, onLoad: {duration: 1000}}}
 						data={[
-							{x: 'Confirmado', y: dataRow[0], fill: commonStyles.colors.amarelo},
-							{x: 'Calculado', y: dataRow[1], fill: commonStyles.colors.azul},
-							{x: 'Exportado', y: dataRow[2], fill: commonStyles.colors.verde},
+							{
+								x: 'Confirmado',
+								y: dataRow[0],
+								fill: commonStyles.colors.amarelo,
+							},
+							{
+								x: 'Calculado',
+								y: dataRow[1],
+								fill: commonStyles.colors.azul,
+							},
+							{
+								x: 'Exportado',
+								y: dataRow[2],
+								fill: commonStyles.colors.verde,
+							},
 						]}
 						style={{
 							data: {
@@ -222,11 +232,11 @@ const styles = StyleSheet.create({
 		backgroundColor: commonStyles.colors.cor1,
 		flex: 1,
 	},
-   tableContainer: {
-      alignItems:'center',
-   },
+	tableContainer: {
+		alignItems: 'center',
+	},
 	table: {
-		borderWidth: 2,
+		borderWidth: 0.5,
 		borderColor: commonStyles.colors.white,
 	},
 	head: {
