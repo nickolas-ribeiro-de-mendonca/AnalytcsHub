@@ -8,6 +8,7 @@ import {
 import {Table, Row, Rows} from 'react-native-table-component';
 import {VictoryAxis, VictoryBar, VictoryChart} from 'victory-native';
 import {SelectList} from 'react-native-dropdown-select-list';
+import commonStyles from '../commonStyles';
 
 const Situation = () => {
 	const [state] = useState({
@@ -17,7 +18,9 @@ const Situation = () => {
 	});
 
 	const [filteredData, setFilteredData] = useState(state.tableData);
+   const [filteredUser, setFilteredUser] = useState(state.tableData)
 	const [selected, setSelected] = useState([]);
+   const [selectedUser, setSelectedUser] = useState([])
 
 	const apontamentos = filteredData => {
 		let apontamentos = [];
@@ -41,7 +44,7 @@ const Situation = () => {
 
 	const wsList = () => {
 		const {tableData} = state;
-		const data = [{key: '', value: ''}];
+		const data = [{key: '', value: 'Empresas'}];
 		tableData.forEach(item => {
 			const existingItem = data.find(obj => obj.value === item[0]);
 			if (!existingItem) {
@@ -52,8 +55,9 @@ const Situation = () => {
 	};
 
 	const userList = () => {
-		const {tableData} = state;
-		const data = [];
+      
+		const tableData = filteredUser;
+		const data = [{key: '', value: 'Usuários'}];
 		tableData.forEach(item => {
 			const existingItem = data.find(obj => obj.value === item[2]);
 			if (!existingItem) {
@@ -68,12 +72,25 @@ const Situation = () => {
 		if (value !== '') {
 			const newList = state.tableData.filter(item => item[0] === value);
 			setFilteredData(newList);
+         setFilteredUser(newList)
 			apontamentos(filteredData);
 		} else {
 			setFilteredData(state.tableData);
 			apontamentos(state.tableData);
+         
 		}
 	};
+   const handleSlectedUser = value => {
+      setSelectedUser(value)
+      if(value !== ''){
+         const newList = filteredUser.filter(item => item[1] === value)
+         setFilteredData(newList)
+         apontamentos(filteredData)
+      }else {
+         setFilteredData(filteredUser)
+         apontamentos(filteredUser)
+      }
+   }
 
 	const tableHead = ['Confirmado', 'Calculado', 'Exportado', 'Total'];
 	const aponts = apontamentos(filteredData).reduce(
@@ -89,7 +106,7 @@ const Situation = () => {
 	const dataRow = [conf, calc, expt, aponts];
 
 	return (
-		<ScrollView style={{backgroundColor: '#191013'}}>
+		<ScrollView >
 			<View style={styles.container}>
 				<Text style={styles.title}>Apontadores</Text>
 
@@ -110,6 +127,7 @@ const Situation = () => {
 					<SelectList
 						data={userList}
 						search={false}
+                  setSelected={val => handleSlectedUser(val)}
 						placeholder="Usuário"
 						boxStyles={{
 							borderColor: 'white',
@@ -120,14 +138,17 @@ const Situation = () => {
 						dropdownTextStyles={{color: 'white'}}
 					/>
 				</View>
-				<Table borderStyle={styles.table}>
-					<Row
-						data={state.tableHead}
-						style={styles.head}
-						textStyle={styles.tableText}
-					/>
-					<Rows data={filteredData} textStyle={styles.tableText} />
-				</Table>
+            <View style={styles.tableContainer}>
+				   <Table borderStyle={styles.table} widthArr={state.widthArr}>
+				   	<Row
+				   		data={state.tableHead}
+				   		style={styles.head}
+				   		textStyle={styles.tableText}
+                     widthArr={state.widthArr}
+				   	/>
+				   	<Rows data={filteredData} textStyle={styles.tableText} widthArr={state.widthArr}/>
+				   </Table>
+            </View>
 
 				<Text style={styles.title}>Geral</Text>
 				<Table borderStyle={styles.table}>
@@ -159,9 +180,9 @@ const Situation = () => {
 					<VictoryBar
 						animate={{duration: 2000, onLoad: {duration: 1000}}}
 						data={[
-							{x: 'Confirmado', y: dataRow[0], fill: '#FF6347'},
-							{x: 'Calculado', y: dataRow[1], fill: '#4682B4'},
-							{x: 'Exportado', y: dataRow[2], fill: '#32CD32'},
+							{x: 'Confirmado', y: dataRow[0], fill: commonStyles.colors.amarelo},
+							{x: 'Calculado', y: dataRow[1], fill: commonStyles.colors.azul},
+							{x: 'Exportado', y: dataRow[2], fill: commonStyles.colors.verde},
 						]}
 						style={{
 							data: {
@@ -198,24 +219,27 @@ export default Situation;
 
 const styles = StyleSheet.create({
 	container: {
-		backgroundColor: '#191013',
+		backgroundColor: commonStyles.colors.cor1,
 		flex: 1,
 	},
+   tableContainer: {
+      alignItems:'center',
+   },
 	table: {
 		borderWidth: 2,
-		borderColor: '#f4f4f2',
+		borderColor: commonStyles.colors.white,
 	},
 	head: {
 		height: 50,
-		backgroundColor: '#5b88a5',
+		backgroundColor: commonStyles.colors.cor2,
 	},
 	tableText: {
 		textAlign: 'center',
-		color: '#f4f4f2',
+		color: commonStyles.colors.white,
 	},
 	title: {
 		fontSize: 20,
-		color: '#f4f4f4',
+		color: commonStyles.colors.white,
 		textAlign: 'center',
 		padding: 20,
 	},
@@ -225,7 +249,7 @@ const styles = StyleSheet.create({
 		justifyContent: 'space-evenly',
 	},
 	card: {
-		borderColor: '#5b88a5',
+		borderColor: commonStyles.colors.cor2,
 		borderWidth: 1,
 		borderRadius: 15,
 		padding: 10,
@@ -234,12 +258,12 @@ const styles = StyleSheet.create({
 	cardTitle: {
 		textAlign: 'center',
 		fontSize: 10,
-		color: '#f4f4f4',
+		color: commonStyles.colors.white,
 	},
 	cardNumber: {
 		textAlign: 'center',
 		fontSize: 25,
-		color: '#f4f4f4',
+		color: commonStyles.colors.white,
 	},
 	drop: {
 		flexDirection: 'row',

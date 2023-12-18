@@ -9,6 +9,8 @@ import {
 } from 'victory-native';
 import {tableHead, tableData, widthArr} from '../fonts';
 import {SelectList} from 'react-native-dropdown-select-list';
+import commonStyles from '../commonStyles';
+
 
 const initialState = {
 	tableHead: tableHead,
@@ -151,11 +153,11 @@ const Companies = () => {
 								data: {
 									fill: ({datum}) => {
 										if (datum.situation === 'Normal') {
-											return '#32CD32';
+											return commonStyles.colors.verde;
 										} else if (datum.situation === 'Atrasado') {
-											return '#4682B4';
+											return commonStyles.colors.amarelo;
 										} else if (datum.situation === 'Parado') {
-											return '#FF6347';
+											return commonStyles.colors.vermelho;
 										}
 										return '#000000';
 									},
@@ -190,27 +192,28 @@ export default Companies;
 
 const styles = StyleSheet.create({
 	container: {
-		backgroundColor: '#191013',
+		backgroundColor: commonStyles.colors.cor1,
 		flex: 1,
 	},
 	title: {
 		paddingTop: 20,
 		textAlign: 'center',
 		fontSize: 20,
-		color: '#f4f4f2',
+		color: commonStyles.colors.white,
 	},
 	table: {
 		borderWidth: 2,
-		borderColor: '#f4f4f2',
+		borderColor: commonStyles.colors.white,
 	},
 	head: {
 		height: 50,
-		backgroundColor: '#5b88a5',
+		backgroundColor: commonStyles.colors.cor2,
 	},
 	rows: {
-		backgroundColor: '#d4cdc5',
+		backgroundColor: commonStyles.colors.cor1,
 	},
 	text: {
+      color:commonStyles.colors.white,
 		textAlign: 'center',
 		margin: 3,
 	},
