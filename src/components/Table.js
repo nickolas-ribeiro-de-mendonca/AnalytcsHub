@@ -51,9 +51,10 @@ export default class Tables extends Component {
 
 const styles = StyleSheet.create({
 	container: {
-		maxHeight: 320,
+		maxHeight: 318,
 		padding: 16,
 		paddingTop: 30,
+		alignItems: 'center'
 	},
     table:{
         borderWidth: 0.5,

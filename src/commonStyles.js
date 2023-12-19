@@ -12,6 +12,6 @@ export default {
       amarelo: '#F9C74F',
       azul : '#277DA1',
       vermelho: '#F94144',
-      verde: '#43AA8B',
+      verde: '#20c67a',
 	}
 }
