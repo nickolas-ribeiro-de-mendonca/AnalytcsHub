@@ -1,12 +1,13 @@
 import React, {useState} from 'react';
-import {Text, View, StyleSheet, ScrollView} from 'react-native';
+import {Text, View, StyleSheet, ScrollView, StatusBar} from 'react-native';
 import SelectLists from '../components/SelectList';
 import {tableData, tableHead, widthArr} from '../situacaoData';
 import Tables from '../components/Table';
 import commonStyles from '../commonStyles';
 import {Cards} from '../components/Cards';
 import BarCharts from '../components/BarCharts';
-import { TitleOne } from '../components/Titles';
+import {TitleOne, TitleTwo} from '../components/Titles';
+import { Header } from '../components/Header';
 
 const dataInitial = tableData.sort((a, b) => a[9] - b[9]);
 const modifiedData = dataInitial.map(item => {
@@ -82,14 +83,21 @@ const SituationApt = () => {
 	};
 
 	return (
-		<ScrollView>
+		<ScrollView >
+			<StatusBar
+				hidden={false}
+				backgroundColor={commonStyles.colors.cor}
+				translucent={false}
+				networkActivityIndicatorVisible={true}
+			/>
 			<View style={styles.container}>
-				<TitleOne title={'Situação'}/>
+			<Header name={'Apontamentos por Empresa'}/>
 				<View style={styles.drop}>
 					<SelectLists
 						data={list}
 						placeholder={'Empresas'}
 						setSelected={handleSelect}
+						width={150}
 					/>
 				</View>
 				<View>
@@ -99,6 +107,7 @@ const SituationApt = () => {
 						widthArr={state.widthArr}
 					/>
 				</View>
+				<TitleTwo title={'Totalizadores'} />
 				<View>
 					<Tables
 						tableHead={['Conf', 'Calc', 'Exp', 'Can', 'Edit', 'Validos']}

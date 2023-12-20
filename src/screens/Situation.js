@@ -2,9 +2,12 @@ import React, {useState} from 'react';
 import {Text, View, StyleSheet, ScrollView} from 'react-native';
 import {apontadorData, apontadorHead, apontadorWidthArr} from '../fonts';
 import {Table, Row, Rows} from 'react-native-table-component';
-import {VictoryAxis, VictoryBar, VictoryChart} from 'victory-native';
-import {SelectList} from 'react-native-dropdown-select-list';
 import commonStyles from '../commonStyles';
+import { Header } from '../components/Header';
+import SelectLists from '../components/SelectList';
+import Tables from '../components/Table';
+import BarCharts from '../components/BarCharts';
+import { TitleTwo } from '../components/Titles';
 
 const Situation = () => {
 	const [state] = useState({
@@ -99,112 +102,60 @@ const Situation = () => {
 	const pExpt = (expt / aponts) * 100;
 	const dataRow = [conf, calc, expt, aponts];
 
+	const dataChartBar = () => {
+		const data =[
+			{x:'Confirmado' , y:dataRow[0] },
+			{x:'Calculado' , y:dataRow[1] },
+			{x:'Exportado' , y:dataRow[2] }
+		]
+		return data
+	}
+
 	return (
 		<ScrollView>
 			<View style={styles.container}>
-				<Text style={styles.title}>Apontadores</Text>
+				
+				<Header name={'Apontamento por Apontador'}/>
 
 				<View style={styles.drop}>
-					<SelectList
+					<SelectLists
 						data={wsList}
-						setSelected={val => handleSelectCompany(val)}
-						search={false}
-						placeholder="Empresas"
-						boxStyles={{
-							borderColor: 'white',
-							width: 150,
-							alignContent: 'center',
-						}}
-						inputStyles={{color: 'white'}}
-						dropdownTextStyles={{color: 'white'}}
+						placeholder={'Empresa'}
+						setSelected={handleSelectCompany}
+						width={150}
 					/>
-					<SelectList
+					<SelectLists
 						data={userList}
-						search={false}
-						setSelected={val => handleSlectedUser(val)}
-						placeholder="Usuário"
-						boxStyles={{
-							borderColor: 'white',
-							width: 150,
-							alignContent: 'center',
-						}}
-						inputStyles={{color: 'white'}}
-						dropdownTextStyles={{color: 'white'}}
+						placeholder={'Usuário'}
+						setSelected={handleSlectedUser}
+						width={150}
 					/>
 				</View>
-				<View style={styles.tableContainer}>
-					<Table borderStyle={styles.table} widthArr={state.widthArr}>
-						<Row
-							data={state.tableHead}
-							style={styles.head}
-							textStyle={styles.tableText}
-							widthArr={state.widthArr}
-						/>
-						<Rows
-							data={filteredData}
-							textStyle={styles.tableText}
-							widthArr={state.widthArr}
-						/>
-					</Table>
-				</View>
 
-				<Text style={styles.title}>Geral</Text>
-				<Table borderStyle={styles.table}>
-					<Row
-						data={tableHead}
-						style={styles.head}
-						textStyle={styles.tableText}
-					/>
-					<Row data={dataRow} textStyle={styles.tableText} />
-				</Table>
+				<Tables
+					tableHead={state.tableHead}
+					widthArr={state.widthArr}
+					tableData={filteredData}
+				/>
 
-				<VictoryChart domain={{x: [0, 4]}}>
-					<VictoryAxis
-						style={{
-							axis: {stroke: 'white'},
-							ticks: {stroke: 'white'},
-							tickLabels: {fill: 'white'},
-						}}
-					/>
-					<VictoryAxis
-						dependentAxis
-						style={{
-							axis: {stroke: 'white'},
-							ticks: {stroke: 'white'},
-							tickLabels: {fill: 'white'},
-						}}
-					/>
+				<TitleTwo title={'Totalizadores'}/>
+				<Tables
+					tableHead={tableHead}
+					tableData={[dataRow]}
+					widthArr={[90, 90, 90, 90]}
+				/>
 
-					<VictoryBar
-						animate={{duration: 2000, onLoad: {duration: 1000}}}
-						data={[
-							{
-								x: 'Confirmado',
-								y: dataRow[0],
-								fill: commonStyles.colors.amarelo,
-							},
-							{
-								x: 'Calculado',
-								y: dataRow[1],
-								fill: commonStyles.colors.azul,
-							},
-							{
-								x: 'Exportado',
-								y: dataRow[2],
-								fill: commonStyles.colors.verde,
-							},
-						]}
-						style={{
-							data: {
-								fill: ({datum}) => datum.fill,
-							},
-							labels: {
-								fill: 'white',
-							},
-						}}
-						labels={({datum}) => datum.y.toFixed(0)}
-					/>
-				</VictoryChart>
+				<BarCharts
+					xAxis={true}
+					yAxis={false}
+					data={dataChartBar()}
+					colors={[
+						commonStyles.colors.azul,
+						commonStyles.colors.lightGray,
+						commonStyles.colors.verde,
+						commonStyles.colors.vermelho,
+					]}
+				/>
 
 				<View style={styles.cards}>
 					<View

@@ -8,9 +8,12 @@ import {
 	VictoryAxis,
 } from 'victory-native';
 import {tableHead, tableData, widthArr} from '../fonts';
-import {SelectList} from 'react-native-dropdown-select-list';
 import commonStyles from '../commonStyles';
-
+import {Header} from '../components/Header';
+import SelectLists from '../components/SelectList';
+import Tables from '../components/Table';
+import BarCharts from '../components/BarCharts';
+import { TitleOne, TitleTwo } from '../components/Titles';
 
 const initialState = {
 	tableHead: tableHead,
@@ -57,14 +60,13 @@ const Companies = () => {
 	const selectList = () => {
 		const {tableData} = state;
 		const data = [];
-      data.push({key: '', value: 'Empresas'})
+		data.push({key: '', value: 'Empresas'});
 		tableData.forEach(item => {
 			const existingItem = data.find(obj => obj.value === item[1]);
 			if (!existingItem) {
 				data.push({key: item[0], value: item[1]});
 			}
 		});
-		;
 		return data;
 	};
 	const handleSelectCompany = value => {
@@ -72,15 +74,19 @@ const Companies = () => {
 		if (value !== '') {
 			const foundArray = tableData.filter(item => item[0] === value);
 			setFilteredData(foundArray);
-		}else {
-         setFilteredData(state.tableData)
-      }
+		} else {
+			setFilteredData(state.tableData);
+		}
 	};
-	const data = [
-		{situation: 'Normal', amount: situationCaunter('Normal')},
-		{situation: 'Atrasado', amount: situationCaunter('Atrasado')},
-		{situation: 'Parado', amount: situationCaunter('Parado')},
-	];
+
+	const dataChartBar = () => {
+		const data = [
+			{x: 'Normal', y: situationCaunter('Normal')},
+			{x: 'Atrasado', y: situationCaunter('Atrasado')},
+			{x: 'Parado', y: situationCaunter('Parado')},
+		];
+		return data;
+	};
 
 	const versionsCount = countMobServerVersions(filteredData);
 	const dataPie = Object.keys(versionsCount).map(version => ({
@@ -89,87 +95,41 @@ const Companies = () => {
 	}));
 
 	return (
-		<ScrollView>
+		<ScrollView style={{backgroundColor: commonStyles.colors.cor1}}>
 			<View style={styles.container}>
-				<View style={styles.listView}>
-					<SelectList
-						setSelected={val => handleSelectCompany(val)}
-						data={selectList}
-						search={false}
-						placeholder="Empresas"
-						boxStyles={{
-							borderColor: 'white',
-							width: 200,
-							alignContent: 'center',
-						}}
-						inputStyles={{color: 'white'}}
-						dropdownTextStyles={{color: 'white'}}
-					/>
-				</View>
-				
-				<Text style={[styles.title, {padding: 20}]}>Empresas</Text>
-				<ScrollView horizontal={true}>
-					<Table borderStyle={styles.table}>
-						<Row
-							data={state.tableHead}
-							widthArr={state.widthArr}
-							style={styles.head}
-							textStyle={styles.text}
-						/>
-						<Rows
-							data={filteredData}
-							widthArr={state.widthArr}
-							textStyle={styles.text}
-							style={styles.rows}
-						/>
-					</Table>
-				</ScrollView>
+				<Header name={'Sincronização'} />
 
-				<View style={styles.chartOne}>
-					<Text style={styles.title}>Situação</Text>
-					<VictoryChart width={400} domain={{x: [0, 4]}}>
-						<VictoryAxis
-							style={{
-								axis: {stroke: 'white'},
-								ticks: {stroke: 'white'},
-								tickLabels: {fill: 'white'},
-							}}
-						/>
-						<VictoryAxis
-							dependentAxis
-							style={{
-								axis: {stroke: 'white'},
-								ticks: {stroke: 'white'},
-								tickLabels: {fill: 'white'},
-							}}
-						/>
-						<VictoryBar
-							animate={{duration: 2000, onLoad: {duration: 1000}}}
-							barRatio={0.5}
-							data={data}
-							x="situation"
-							y="amount"
-							style={{
-								data: {
-									fill: ({datum}) => {
-										if (datum.situation === 'Normal') {
-											return commonStyles.colors.verde;
-										} else if (datum.situation === 'Atrasado') {
-											return commonStyles.colors.amarelo;
-										} else if (datum.situation === 'Parado') {
-											return commonStyles.colors.vermelho;
-										}
-										return '#000000';
-									},
-								},
-								parent: {border: '1px solid #ccc'},
-							}}
-						/>
-					</VictoryChart>
+				<View style={styles.listView}>
+					<SelectLists
+						data={selectList}
+						placeholder={'Empresas'}
+						setSelected={handleSelectCompany}
+						width={150}
+					/>
 				</View>
 
 				<View>
-					<Text style={styles.title}>MobServer</Text>
+					<Tables
+						tableHead={state.tableHead}
+						tableData={filteredData}
+						widthArr={state.widthArr}
+					/>
+				</View>
+
+				<View>
+					<BarCharts
+						xAxis={true}
+						yAxis={false}
+						data={dataChartBar()}
+						colors={[
+							commonStyles.colors.verde,
+							commonStyles.colors.amarelo,
+							commonStyles.colors.vermelho
+						]}
+					/>
+				</View>
+				<TitleTwo title={'MobServer'}/>
+				<View>					
 					<VictoryPie
 						data={dataPie}
 						//animate={{ duration: 3000, onLoad: { duration: 1000 }}}
@@ -213,7 +173,7 @@ const styles = StyleSheet.create({
 		backgroundColor: commonStyles.colors.cor1,
 	},
 	text: {
-      color:commonStyles.colors.white,
+		color: commonStyles.colors.white,
 		textAlign: 'center',
 		margin: 3,
 	},

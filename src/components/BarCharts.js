@@ -8,7 +8,7 @@ export default class BarCharts extends Component {
 			<VictoryChart
 				domain={{x: [0.5, this.props.data.length+0.5]}}
 				animate={{
-					duration: 1000,
+					duration:2000, onLoad:{duration:1000}
 				}}>
 				{this.props.xAxis && (
 					<VictoryAxis

@@ -80,7 +80,7 @@ const apontadorData = [
 	[2, 6, 'Laura', 100, 1],
 	[2, 7, 'Rafaela', 300, 5],
 ];
-const apontadorWidthArr = [50, 50, 100, 100, 100];
+const apontadorWidthArr = [48, 48, 95, 95, 95];
 
 export {
 	tableHead,
