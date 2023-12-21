@@ -1,19 +1,15 @@
 import React, {useState} from 'react';
-import {Text, View, StyleSheet, ScrollView, Button} from 'react-native';
-import {Table, Row, Rows} from 'react-native-table-component';
-import {
-	VictoryBar,
-	VictoryChart,
-	VictoryPie,
-	VictoryAxis,
-} from 'victory-native';
+import { View, StyleSheet, ScrollView, StatusBar} from 'react-native';
+import {VictoryPie} from 'victory-native';
 import {tableHead, tableData, widthArr} from '../fonts';
 import commonStyles from '../commonStyles';
 import {Header} from '../components/Header';
 import SelectLists from '../components/SelectList';
 import Tables from '../components/Table';
 import BarCharts from '../components/BarCharts';
-import { TitleOne, TitleTwo } from '../components/Titles';
+import {TitleTwo} from '../components/Titles';
+import { dataWS } from '../dataJSON';
+import moment from 'moment';
 
 const initialState = {
 	tableHead: tableHead,
@@ -22,25 +18,36 @@ const initialState = {
 };
 
 const Companies = () => {
+	const data = dataWS.map(objeto => Object.values(objeto));
+	const head = ['WS', 'Empresa', 'CNPJ', 'Inscrição', 'Ultima Sinc.', 'Código Agro', 'MobServer', 'Apelido']
+	const widthA= [50, 200, 150, 150, 150, 50, 100, 100]
+
 	const [state] = useState({
-		tableHead: tableHead,
-		tableData: tableData,
-		widthArr: widthArr,
+		tableHead: head,
+		tableData: data,
+		widthArr: widthA,
 	});
 
 	const [selectedCompany, setSelectedCompany] = useState(null);
+	const [selectOrder, setSelectOrder]=useState('')
 	const [filteredData, setFilteredData] = useState(state.tableData);
 
-	const situationCaunter = situation => {
-		const tableData = filteredData;
-		let count = 0;
-		tableData.forEach(data => {
-			if (data[5] === situation) {
-				count++;
-			}
+	const situation = () => {
+		const data = filteredData
+		var normal = 0
+		var atrasado = 0
+		var parado = 0
+		const now = new Date(moment())
+		data.forEach(item => {
+			const lastSinc = new Date(item[4]).getTime()
+			const datadif = (now - lastSinc)/(1000*3600)
+			if ( datadif <= 1 ) normal++
+			if ( datadif <= 2 ) atrasado++
+			if ( datadif > 2 ) parado++
 		});
-		return count;
-	};
+		return[normal,atrasado,parado]
+	}
+	
 
 	const countMobServerVersions = data => {
 		const versionsCount = {};
@@ -56,7 +63,11 @@ const Companies = () => {
 		});
 		return versionsCount;
 	};
-
+	const ordenador = [		
+		{key: 0, value: 'Código'},
+		{key: 1, value: 'Codinome'},
+		{key: 2, value: 'Sincronização'}
+	]
 	const selectList = () => {
 		const {tableData} = state;
 		const data = [];
@@ -81,12 +92,31 @@ const Companies = () => {
 
 	const dataChartBar = () => {
 		const data = [
-			{x: 'Normal', y: situationCaunter('Normal')},
-			{x: 'Atrasado', y: situationCaunter('Atrasado')},
-			{x: 'Parado', y: situationCaunter('Parado')},
+			{x: 'Normal', y: situation()[0]},
+			{x: 'Atrasado', y: situation()[1]},
+			{x: 'Parado', y: situation()[2]},
 		];
 		return data;
 	};
+	const reordenar = value => {
+		switch (value) {
+			case 0:
+				setSelectOrder(value)
+				setFilteredData(filteredData.sort((a, b) => a[0] - b[0]))
+				break;
+			case 1:
+				setSelectOrder(value)
+				setFilteredData(filteredData.sort(function(a ,b) { return a[7] > b[7] ? 1 : -1}))
+				break;
+			case 2:
+				setSelectOrder(value)
+				setFilteredData(filteredData.sort(function(a, b){ return a[4] > b[4] ? 1 : -1}))
+				break
+			default:
+				break;
+		}
+
+	}
 
 	const versionsCount = countMobServerVersions(filteredData);
 	const dataPie = Object.keys(versionsCount).map(version => ({
@@ -96,6 +126,12 @@ const Companies = () => {
 
 	return (
 		<ScrollView style={{backgroundColor: commonStyles.colors.cor1}}>
+			<StatusBar
+				hidden={false}
+				backgroundColor={commonStyles.colors.cor2}
+				translucent={false}
+				networkActivityIndicatorVisible={true}
+			/>
 			<View style={styles.container}>
 				<Header name={'Sincronização'} />
 
@@ -106,6 +142,12 @@ const Companies = () => {
 						setSelected={handleSelectCompany}
 						width={150}
 					/>
+					<SelectLists
+						data={ordenador}
+						placeholder={'Ordenar'}
+						setSelected={reordenar}
+						width={150}
+					/>					
 				</View>
 
 				<View>
@@ -124,15 +166,14 @@ const Companies = () => {
 						colors={[
 							commonStyles.colors.verde,
 							commonStyles.colors.amarelo,
-							commonStyles.colors.vermelho
+							commonStyles.colors.vermelho,
 						]}
 					/>
 				</View>
-				<TitleTwo title={'MobServer'}/>
-				<View>					
+				<TitleTwo title={'MobServer'} />
+				<View>
 					<VictoryPie
 						data={dataPie}
-						//animate={{ duration: 3000, onLoad: { duration: 1000 }}}
 						colorScale="qualitative"
 						height={300}
 						style={{
@@ -155,41 +196,9 @@ const styles = StyleSheet.create({
 		backgroundColor: commonStyles.colors.cor1,
 		flex: 1,
 	},
-	title: {
-		paddingTop: 20,
-		textAlign: 'center',
-		fontSize: 20,
-		color: commonStyles.colors.white,
-	},
-	table: {
-		borderWidth: 0.5,
-		borderColor: commonStyles.colors.white,
-	},
-	head: {
-		height: 50,
-		backgroundColor: commonStyles.colors.cor2,
-	},
-	rows: {
-		backgroundColor: commonStyles.colors.cor1,
-	},
-	text: {
-		color: commonStyles.colors.white,
-		textAlign: 'center',
-		margin: 3,
-	},
-	chartOne: {
-		paddingTop: 10,
-	},
 	listView: {
-		paddingTop: 25,
-		flex: 1,
-		justifyContent: 'center',
+		flexDirection:'row',
+		justifyContent:'space-around',
 		alignItems: 'center',
-	},
-	btnView: {
-		flex: 1,
-		justifyContent: 'center',
-		alignItems: 'center',
-		paddingTop: 20,
 	},
 });

@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
 		textAlign: 'center',
 		color: commonStyles.colors.white,
 		fontFamily: commonStyles.fontFamily,
-		fontWeight: 700
+		fontWeight: 700,
 	},
 	row: {
 		height: 28,

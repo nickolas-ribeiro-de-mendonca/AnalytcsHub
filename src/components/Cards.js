@@ -19,22 +19,21 @@ export const Cards = (props) => {
 const styles = StyleSheet.create({
     container:{
         borderColor: commonStyles.colors.cor2,
-        borderWidth: 0.5,
-        borderRadius: 5,
+        borderWidth: 1,
+        borderRadius: 15,
+        padding: 10,
         width: 150,
-        height: 80,
         justifyContent:'center',
         
     },
     title:{
-        fontSize:20,
-        textAlign:'center',
-        textAlignVertical:'bottom',
+        fontSize: 12,
+        textAlign: 'center',
         color: commonStyles.colors.white
     },
 	text: {
         textAlign: 'center',
-		fontSize: 35,
+		fontSize: 25,
 		color: commonStyles.colors.white,
 	},
 });

@@ -1,4 +1,3 @@
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {NavigationContainer} from '@react-navigation/native';
 import Companies from '../screens/Companies';
 import Situation from '../screens/Situation';

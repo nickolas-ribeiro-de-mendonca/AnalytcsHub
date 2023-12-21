@@ -20,7 +20,8 @@ const styles = StyleSheet.create({
     titleOne:{
         textAlign:"center",
         fontSize: 20,
-        paddingVertical: 20,
+        paddingTop: 20,
+        paddingBottom: 10,
         fontFamily: 'Roboto-Bold',
         color: commonStyles.colors.white
     },

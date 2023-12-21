@@ -1,12 +1,12 @@
 import React, {useState} from 'react';
-import {Text, View, StyleSheet, ScrollView, StatusBar} from 'react-native';
+import { View, StyleSheet, ScrollView } from 'react-native';
 import SelectLists from '../components/SelectList';
 import {tableData, tableHead, widthArr} from '../situacaoData';
 import Tables from '../components/Table';
 import commonStyles from '../commonStyles';
 import {Cards} from '../components/Cards';
 import BarCharts from '../components/BarCharts';
-import {TitleOne, TitleTwo} from '../components/Titles';
+import { TitleTwo} from '../components/Titles';
 import { Header } from '../components/Header';
 
 const dataInitial = tableData.sort((a, b) => a[9] - b[9]);
@@ -84,12 +84,6 @@ const SituationApt = () => {
 
 	return (
 		<ScrollView >
-			<StatusBar
-				hidden={false}
-				backgroundColor={commonStyles.colors.cor}
-				translucent={false}
-				networkActivityIndicatorVisible={true}
-			/>
 			<View style={styles.container}>
 			<Header name={'Apontamentos por Empresa'}/>
 				<View style={styles.drop}>
@@ -164,7 +158,7 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 	},
 	cards: {
-		paddingBottom: 30,
+		padding: 20,
 		flexDirection: 'row',
 		justifyContent: 'space-around',
 	},
