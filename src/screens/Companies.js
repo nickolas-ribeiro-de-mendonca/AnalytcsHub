@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import { View, StyleSheet, ScrollView, StatusBar} from 'react-native';
+import {View, StyleSheet, ScrollView, StatusBar} from 'react-native';
 import {VictoryPie} from 'victory-native';
 import {tableHead, tableData, widthArr} from '../fonts';
 import commonStyles from '../commonStyles';
@@ -8,7 +8,7 @@ import SelectLists from '../components/SelectList';
 import Tables from '../components/Table';
 import BarCharts from '../components/BarCharts';
 import {TitleTwo} from '../components/Titles';
-import { dataWS } from '../dataJSON';
+import {dataWS} from '../dataJSON';
 import moment from 'moment';
 
 const initialState = {
@@ -19,8 +19,17 @@ const initialState = {
 
 const Companies = () => {
 	const data = dataWS.map(objeto => Object.values(objeto));
-	const head = ['WS', 'Empresa', 'CNPJ', 'Inscrição', 'Ultima Sinc.', 'Código Agro', 'MobServer', 'Apelido']
-	const widthA= [50, 200, 150, 150, 150, 50, 100, 100]
+	const head = [
+		'WS',
+		'Empresa',
+		'CNPJ',
+		'Inscrição',
+		'Ultima Sinc.',
+		'Código Agro',
+		'MobServer',
+		'Apelido',
+	];
+	const widthA = [50, 200, 150, 150, 150, 50, 100, 100];
 
 	const [state] = useState({
 		tableHead: head,
@@ -29,25 +38,24 @@ const Companies = () => {
 	});
 
 	const [selectedCompany, setSelectedCompany] = useState(null);
-	const [selectOrder, setSelectOrder]=useState('')
+	const [selectOrder, setSelectOrder] = useState('');
 	const [filteredData, setFilteredData] = useState(state.tableData);
 
 	const situation = () => {
-		const data = filteredData
-		var normal = 0
-		var atrasado = 0
-		var parado = 0
-		const now = new Date(moment())
+		const data = filteredData;
+		var normal = 0;
+		var atrasado = 0;
+		var parado = 0;
+		const now = new Date(moment());
 		data.forEach(item => {
-			const lastSinc = new Date(item[4]).getTime()
-			const datadif = (now - lastSinc)/(1000*3600)
-			if ( datadif <= 1 ) normal++
-			if ( datadif <= 2 ) atrasado++
-			if ( datadif > 2 ) parado++
+			const lastSinc = new Date(item[4]).getTime();
+			const datadif = (now - lastSinc) / (1000 * 3600);
+			if (datadif <= 1) normal++;
+			if (datadif <= 2) atrasado++;
+			if (datadif > 2) parado++;
 		});
-		return[normal,atrasado,parado]
-	}
-	
+		return [normal, atrasado, parado];
+	};
 
 	const countMobServerVersions = data => {
 		const versionsCount = {};
@@ -63,11 +71,11 @@ const Companies = () => {
 		});
 		return versionsCount;
 	};
-	const ordenador = [		
+	const ordenador = [
 		{key: 0, value: 'Código'},
 		{key: 1, value: 'Codinome'},
-		{key: 2, value: 'Sincronização'}
-	]
+		{key: 2, value: 'Sincronização'},
+	];
 	const selectList = () => {
 		const {tableData} = state;
 		const data = [];
@@ -101,30 +109,38 @@ const Companies = () => {
 	const reordenar = value => {
 		switch (value) {
 			case 0:
-				setSelectOrder(value)
-				setFilteredData(filteredData.sort((a, b) => a[0] - b[0]))
+				setSelectOrder(value);
+				setFilteredData(filteredData.sort((a, b) => a[0] - b[0]));
 				break;
 			case 1:
-				setSelectOrder(value)
-				setFilteredData(filteredData.sort(function(a ,b) { return a[7] > b[7] ? 1 : -1}))
+				setSelectOrder(value);
+				setFilteredData(
+					filteredData.sort(function (a, b) {
+						return a[7] > b[7] ? 1 : -1;
+					}),
+				);
 				break;
 			case 2:
-				setSelectOrder(value)
-				setFilteredData(filteredData.sort(function(a, b){ return a[4] > b[4] ? 1 : -1}))
-				break
+				setSelectOrder(value);
+				setFilteredData(
+					filteredData.sort(function (a, b) {
+						return a[4] > b[4] ? 1 : -1;
+					}),
+				);
+				break;
 			default:
 				break;
 		}
-
-	}
+	};
 
 	const versionsCount = countMobServerVersions(filteredData);
 	const dataPie = Object.keys(versionsCount).map(version => ({
 		x: version,
 		y: versionsCount[version],
 	}));
-
+	
 	return (
+		
 		<ScrollView style={{backgroundColor: commonStyles.colors.cor1}}>
 			<StatusBar
 				hidden={false}
@@ -132,9 +148,10 @@ const Companies = () => {
 				translucent={false}
 				networkActivityIndicatorVisible={true}
 			/>
+
 			<View style={styles.container}>
 				<Header name={'Sincronização'} />
-
+				
 				<View style={styles.listView}>
 					<SelectLists
 						data={selectList}
@@ -147,7 +164,7 @@ const Companies = () => {
 						placeholder={'Ordenar'}
 						setSelected={reordenar}
 						width={150}
-					/>					
+					/>
 				</View>
 
 				<View>
@@ -197,8 +214,8 @@ const styles = StyleSheet.create({
 		flex: 1,
 	},
 	listView: {
-		flexDirection:'row',
-		justifyContent:'space-around',
+		flexDirection: 'row',
+		justifyContent: 'space-around',
 		alignItems: 'center',
 	},
 });

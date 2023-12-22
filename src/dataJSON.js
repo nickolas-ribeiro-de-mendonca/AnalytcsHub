@@ -65,7 +65,7 @@ const dataWS =
         "EMPRAZAOSOCIAL": "Leonardo Rabelo de Oliveira e Outros",
         "EMPCNPJ": "98404571600",
         "EMPIE": "003.819.094.01.98",
-        "EMPULTIMAATUALIZACAO": "2023-12-21 14:55:48",
+        "EMPULTIMAATUALIZACAO": "2023-12-22 14:55:48",
         "EMPCODIGOAGRO": 4,
         "EMPVERSAOMOBSERVER": "1.19.7",
         "EMPAPELIDO": "LGarcia"
@@ -75,7 +75,7 @@ const dataWS =
         "EMPRAZAOSOCIAL": "Debora Cristina de Oliveira e Outras",
         "EMPCNPJ": "5725159604",
         "EMPIE": "ISE.NTO.",
-        "EMPULTIMAATUALIZACAO": "2023-12-21 14:55:50",
+        "EMPULTIMAATUALIZACAO": "2023-12-22 14:55:50",
         "EMPCODIGOAGRO": 5,
         "EMPVERSAOMOBSERVER": "1.19.7",
         "EMPAPELIDO": "LGarcia"
