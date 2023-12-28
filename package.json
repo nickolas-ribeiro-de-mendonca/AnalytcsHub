@@ -10,6 +10,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@react-native-async-storage/async-storage": "^1.19.3",
     "@fortawesome/fontawesome-svg-core": "^6.5.1",
     "@fortawesome/free-brands-svg-icons": "^6.5.1",
     "@fortawesome/free-regular-svg-icons": "^6.5.1",
@@ -22,6 +23,7 @@
     "@react-navigation/native": "^6.1.9",
     "@react-navigation/native-stack": "^6.9.17",
     "@react-navigation/stack": "^6.3.20",
+    "axios": "^1.6.3",
     "moment": "^2.29.4",
     "react": "18.2.0",
     "react-native": "0.72.6",
@@ -35,6 +37,7 @@
     "react-native-svg": "^14.1.0",
     "react-native-table-component": "^1.2.2",
     "react-native-vector-icons": "^10.0.2",
+    "typed-async-storage": "^3.1.2",
     "victory-native": "^36.6.12"
   },
   "devDependencies": {
