@@ -1,6 +1,8 @@
 import React from "react";
 import { View, TextInput, StyleSheet} from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome'
+import commonStyles from "../commonStyles";
+
 
 export default props => {
 	return(
@@ -25,7 +27,7 @@ const styles = StyleSheet.create({
 		marginLeft:20
 	},
 	icon:{
-        color:'red',
+        color:commonStyles.colors.cor6,
 		marginLeft:20
 	},
 })
