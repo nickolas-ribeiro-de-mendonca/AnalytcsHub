@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {View, StyleSheet, ScrollView, StatusBar} from 'react-native';
 import {VictoryPie} from 'victory-native';
 import {tableHead, tableData, widthArr} from '../fonts';
@@ -10,15 +10,42 @@ import BarCharts from '../components/BarCharts';
 import {TitleTwo} from '../components/Titles';
 import {dataWS} from '../dataJSON';
 import moment from 'moment';
+import axios from 'axios';
+import { server } from '../common';
 
-const initialState = {
-	tableHead: tableHead,
-	tableData: tableData,
-	widthArr: widthArr,
-};
 
 const Companies = () => {
-	const data = dataWS.map(objeto => Object.values(objeto));
+	const [dat, setData] = useState([])
+	const fullData = async () => {
+		try{
+			const res = await axios.get(`${server}/empresa`)
+			const shortData= res.data.map(obj =>{
+				return{
+					EMPCODIGO: obj.EMPCODIGO,
+					EMPRAZAOSOCIAL:obj.EMPRAZAOSOCIAL,
+					EMPCNPJ:obj.EMPCNPJ,
+					EMPIE:obj.EMPIE ,
+					EMPULTIMAATUALIZACAO :obj.EMPULTIMAATUALIZACAO,
+					EMPCODIGOAGRO :obj.EMPCODIGOAGRO,
+					EMPVERSAOMOBSERVER:obj.EMPVERSAOMOBSERVER,
+					EMPAPELIDO: obj.EMPAPELIDO,
+					EMPAUTORIZADA: obj.EMPAUTORIZADA
+				}
+			})
+			const final = shortData.filter(obj => obj.EMPAUTORIZADA === 1).map(obj => Object.values(obj));
+			setFilteredData(final)
+
+		}catch(error){
+			console.log(error)
+		}
+	}
+
+	useEffect(() =>{
+		fullData()
+	}, [])
+
+	
+	const data = dat
 	const head = [
 		'WS',
 		'Empresa',

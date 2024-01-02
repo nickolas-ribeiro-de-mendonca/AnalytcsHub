@@ -12,10 +12,11 @@ import axios from "axios";
 import {server, showError, showSuccess} from '../common';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AuthInput from '../components/AuthInput';
+import { CommonActions } from "@react-navigation/native";
 
-const Login = () => {
-	const [email, onChangeEmail] = useState('');
-	const [password, onChangePassword] = useState('');
+const Login = ({navigation}) => {
+	const [email, onChangeEmail] = useState('teste@email.com');
+	const [password, onChangePassword] = useState('123456');
 
 	const signin = async () => {
 		try {
@@ -23,13 +24,19 @@ const Login = () => {
 				email:email,
 				password:password
 			})
-			console.log('1')
-			console.log(res.data)
 			AsyncStorage.setItem('userData', JSON.stringify(res.data));
 			axios.defaults.headers.common[
 				'Authorization'
 			] = `bearer ${res.data.token}`;
-			
+			navigation.dispatch(
+				CommonActions.reset({
+					index: 0,
+					routes:[{
+						name:'Home',
+						params: res.data
+					}]
+				})
+			)
 		} catch (error) {
 			showError(error);
 		}
@@ -40,7 +47,7 @@ const Login = () => {
 	const validForm = validations.reduce((t, a) => t && a);
 
 	return (
-		<ScrollView>
+		<ScrollView style={styles.scroll}>
 			<View style={styles.container}>
 				<Image source={require('../imagem/ah.png')} style={styles.img} />
 				<AuthInput
@@ -75,6 +82,9 @@ const Login = () => {
 export default Login;
 
 const styles = StyleSheet.create({
+	scroll:{
+		backgroundColor:commonStyles.colors.cor1
+	},
 	container: {
 		flex: 1,
 		alignItems: 'center',
