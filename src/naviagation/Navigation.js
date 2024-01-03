@@ -63,7 +63,9 @@ const AuthNavigator = () => {
 			<Stack.Screen name="Login">
 				{props => <Login {...props} navigation={props.navigation} />}
 			</Stack.Screen>
-			<Stack.Screen name="Home" component={MyTabs} />
+			<Stack.Screen name="Home">
+				{props => <MyTabs {...props} navigation={props.navigation} />}
+			</Stack.Screen>
 		</Stack.Navigator>
 	);
 };

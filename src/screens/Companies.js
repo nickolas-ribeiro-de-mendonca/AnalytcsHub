@@ -1,21 +1,25 @@
 import React, {useEffect, useState} from 'react';
 import {View, StyleSheet, ScrollView, StatusBar} from 'react-native';
 import {VictoryPie} from 'victory-native';
-import {tableHead, tableData, widthArr} from '../fonts';
+import { tableData } from '../fonts';
 import commonStyles from '../commonStyles';
 import {Header} from '../components/Header';
 import SelectLists from '../components/SelectList';
 import Tables from '../components/Table';
 import BarCharts from '../components/BarCharts';
 import {TitleTwo} from '../components/Titles';
-import {dataWS} from '../dataJSON';
 import moment from 'moment';
 import axios from 'axios';
 import { server } from '../common';
 
 
-const Companies = () => {
+const Companies = (navigation) => {
 	const [dat, setData] = useState([])
+
+	const back = () => {
+		navigation.goBack()
+	}
+
 	const fullData = async () => {
 		try{
 			const res = await axios.get(`${server}/empresa`)
@@ -177,7 +181,7 @@ const Companies = () => {
 			/>
 
 			<View style={styles.container}>
-				<Header name={'Sincronização'} />
+				<Header name={'Sincronização'} navigation={navigation} />
 				
 				<View style={styles.listView}>
 					<SelectLists
