@@ -13,12 +13,8 @@ import axios from 'axios';
 import { server } from '../common';
 
 
-const Companies = (navigation) => {
+const Companies = (props) => {
 	const [dat, setData] = useState([])
-
-	const back = () => {
-		navigation.goBack()
-	}
 
 	const fullData = async () => {
 		try{
@@ -29,7 +25,7 @@ const Companies = (navigation) => {
 					EMPRAZAOSOCIAL:obj.EMPRAZAOSOCIAL,
 					EMPCNPJ:obj.EMPCNPJ,
 					EMPIE:obj.EMPIE ,
-					EMPULTIMAATUALIZACAO :obj.EMPULTIMAATUALIZACAO,
+					EMPULTIMAATUALIZACAO:obj.EMPULTIMAATUALIZACAO,
 					EMPCODIGOAGRO :obj.EMPCODIGOAGRO,
 					EMPVERSAOMOBSERVER:obj.EMPVERSAOMOBSERVER,
 					EMPAPELIDO: obj.EMPAPELIDO,
@@ -38,29 +34,19 @@ const Companies = (navigation) => {
 			})
 			const final = shortData.filter(obj => obj.EMPAUTORIZADA === 1).map(obj => Object.values(obj));
 			setFilteredData(final)
-
 		}catch(error){
 			console.log(error)
 		}
 	}
-
+   
 	useEffect(() =>{
 		fullData()
 	}, [])
 
 	
 	const data = dat
-	const head = [
-		'WS',
-		'Empresa',
-		'CNPJ',
-		'Inscrição',
-		'Ultima Sinc.',
-		'Código Agro',
-		'MobServer',
-		'Apelido',
-	];
-	const widthA = [50, 200, 150, 150, 150, 50, 100, 100];
+	const head = ['WS', 'Empresa', 'CNPJ', 'Inscrição', 'Ultima Sinc.', 'Código Agro', 'MobServer', 'Apelido',];
+	const widthA = [50, 250, 150, 150, 150, 50, 100, 100];
 
 	const [state] = useState({
 		tableHead: head,
@@ -68,22 +54,21 @@ const Companies = (navigation) => {
 		widthArr: widthA,
 	});
 
-	const [selectedCompany, setSelectedCompany] = useState(null);
-	const [selectOrder, setSelectOrder] = useState('');
-	const [filteredData, setFilteredData] = useState(state.tableData);
+
 
 	const situation = () => {
 		const data = filteredData;
 		var normal = 0;
 		var atrasado = 0;
 		var parado = 0;
-		const now = new Date(moment());
+		const now = new moment();
+  
 		data.forEach(item => {
-			const lastSinc = new Date(item[4]).getTime();
-			const datadif = (now - lastSinc) / (1000 * 3600);
-			if (datadif <= 1) normal++;
-			if (datadif <= 2) atrasado++;
-			if (datadif > 2) parado++;
+			const lastSinc = new Date((item[4])).getTime();
+			const datadiff = (now - lastSinc) / (1000 * 3600);
+			if (datadiff <= 1) normal++;
+			if (datadiff <= 2 && datadiff > 1) atrasado++;
+			if (datadiff > 2) parado++;
 		});
 		return [normal, atrasado, parado];
 	};
@@ -163,11 +148,15 @@ const Companies = (navigation) => {
 				break;
 		}
 	};
+   const [selectedCompany, setSelectedCompany] = useState(null);
+	const [selectOrder, setSelectOrder] = useState('');
+	const [filteredData, setFilteredData] = useState(state.tableData);
 
 	const versionsCount = countMobServerVersions(filteredData);
 	const dataPie = Object.keys(versionsCount).map(version => ({
 		x: version,
 		y: versionsCount[version],
+      label: `\n ${versionsCount[version]} \n ${version} \n`
 	}));
 	
 	return (
@@ -181,7 +170,7 @@ const Companies = (navigation) => {
 			/>
 
 			<View style={styles.container}>
-				<Header name={'Sincronização'} navigation={navigation} />
+				<Header name={'Sincronização'} navigation={props.navigation} />
 				
 				<View style={styles.listView}>
 					<SelectLists
@@ -201,7 +190,7 @@ const Companies = (navigation) => {
 				<View>
 					<Tables
 						tableHead={state.tableHead}
-						tableData={filteredData}
+                  tableData={filteredData}
 						widthArr={state.widthArr}
 					/>
 				</View>
@@ -228,6 +217,8 @@ const Companies = (navigation) => {
 							labels: {
 								fill: 'white',
 								fontSize: 12,
+                        textAnchor:'middle',
+                        
 							},
 						}}
 					/>

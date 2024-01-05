@@ -14,11 +14,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import AuthInput from '../components/AuthInput';
 import { CommonActions } from "@react-navigation/native";
 
-const Login = ({navigation}) => {
+const Login = (props) => {
 	const [email, onChangeEmail] = useState('teste@email.com');
 	const [password, onChangePassword] = useState('123456');
 
-	const signin = async () => {
+	const signin = async () => {     
 		try {
 			const res = await axios.post(`${server}/signin`, {
 				email:email,
@@ -28,12 +28,12 @@ const Login = ({navigation}) => {
 			axios.defaults.headers.common[
 				'Authorization'
 			] = `bearer ${res.data.token}`;
-			navigation.dispatch(
+			props.navigation.dispatch(
 				CommonActions.reset({
 					index: 0,
 					routes:[{
 						name:'Home',
-						params: res.data
+						setParams: res.data
 					}]
 				})
 			)
