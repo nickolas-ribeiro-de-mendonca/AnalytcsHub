@@ -33,9 +33,9 @@ const MyTabs = () => {
 					if (route.name === 'Empresas') {
 						iconName = 'building';
 					} else if (route.name === 'Apt Func') {
-						iconName = 'clipboard-list';
+						iconName = 'user-alt';
 					} else if (route.name === 'Apt Emp') {
-						iconName = 'clipboard';
+						iconName = 'users';
 					}
 					return (
 						<FontAwesome5
@@ -63,7 +63,7 @@ const AuthNavigator = () => {
 			<Stack.Screen name="Login">
 				{props => <Login {...props} navigation={props.navigation} />}
 			</Stack.Screen>
-			<Stack.Screen name="Home">
+			<Stack.Screen name="Home" >
 				{props => <MyTabs {...props} navigation={props.navigation} />}
 			</Stack.Screen>
 		</Stack.Navigator>

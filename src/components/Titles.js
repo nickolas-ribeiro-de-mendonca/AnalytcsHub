@@ -10,7 +10,7 @@ const TitleOne = (props) => {
 }
 const TitleTwo = (props) => {
     return (
-        <Text style={styles.titleTwo}>{props.title}</Text>
+        <Text style={[styles.titleTwo, {color: props.color ? props.color : commonStyles.colors.white}]}>{props.title}</Text>
     )
 }
 

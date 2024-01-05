@@ -8,9 +8,9 @@ import Tables from '../components/Table';
 import BarCharts from '../components/BarCharts';
 import {TitleTwo} from '../components/Titles';
 import {Cards} from '../components/Cards';
-import {SelectList} from 'react-native-dropdown-select-list';
 
-const Situation = () => {
+
+const Situation = (props) => {
 	const [state] = useState({
 		tableHead: apontadorHead,
 		tableData: apontadorData,
@@ -115,7 +115,7 @@ const Situation = () => {
 	return (
 		<ScrollView>
 			<View style={styles.container}>
-				<Header name={'Apontamento por Apontador'} />
+				<Header name={'Apontamento por Apontador'} navigation={props.navigation} />
 
 				<View style={styles.drop}>
 					<SelectLists

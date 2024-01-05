@@ -1,5 +1,11 @@
 import {TitleOne} from './Titles';
-import {View, StyleSheet, TouchableOpacity, Modal, Pressable} from 'react-native';
+import {
+	View,
+	StyleSheet,
+	TouchableOpacity,
+	Modal,
+	Pressable,
+} from 'react-native';
 import commonStyles from '../commonStyles';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import {useState} from 'react';
@@ -7,18 +13,19 @@ import {CommonActions} from '@react-navigation/native';
 import {TitleTwo} from './Titles';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import {SelectList} from 'react-native-dropdown-select-list';
 
-export const Header = ({navigation, name} ) => {
+export const Header = ({navigation, name}) => {
 	const [modalVisible, setModalVisible] = useState(false);
-	
-   const logout = () => {
-		delete axios.defaults.headers.common['Authorization']
-      AsyncStorage.removeItem('userData')
+
+	const logout = () => {
+		delete axios.defaults.headers.common['Authorization'];
+		AsyncStorage.removeItem('userData');
 		navigation.dispatch(
 			CommonActions.reset({
 				index: 0,
-				routes: [{ name: 'Login' }],
-			})
+				routes: [{name: 'Login'}],
+			}),
 		);
 	};
 
@@ -41,18 +48,28 @@ export const Header = ({navigation, name} ) => {
 						Alert.alert('Modal has been closed.');
 						setModalVisible(!modalVisible);
 					}}>
-					<View style={styles.centeredView}>
-						<View style={styles.modalView}>
-							<Pressable style={styles.pressable} onPress={logout}>
-								<TitleTwo title={'Sair'} />
-							</Pressable>
-							<Pressable
-								style={styles.pressable}
-								onPress={() => setModalVisible(!modalVisible)}>
-								<TitleTwo title={'Fechar'} />
-							</Pressable>
+					<Pressable
+						style={styles.modalBackground}
+						onPress={() => setModalVisible(!modalVisible)}>
+						<View style={styles.centeredView}>
+							<View style={styles.modalView}>
+								<Pressable style={styles.pressable} onPress={logout}>
+									<TitleTwo
+										title={'Sair'}
+										color={commonStyles.colors.cor2}
+									/>
+								</Pressable>
+								<Pressable
+									style={styles.pressable}
+									onPress={() => setModalVisible(!modalVisible)}>
+									<TitleTwo
+										title={'Fechar'}
+										color={commonStyles.colors.cor1}
+									/>
+								</Pressable>
+							</View>
 						</View>
-					</View>
+					</Pressable>
 				</Modal>
 			</View>
 		</View>
@@ -75,25 +92,33 @@ const styles = StyleSheet.create({
 	},
 	centeredView: {
 		flex: 1,
-		justifyContent: 'center',
-		alignItems: 'center',
+		position: 'absolute',
+		marginLeft: 208,
+		paddingTop: 40,
 	},
 	modalView: {
-		backgroundColor: commonStyles.colors.cor2,
+		backgroundColor: commonStyles.colors.white,
 		borderRadius: 20,
 		paddingHorizontal: 50,
+		borderTopEndRadius: 0,
 
 		alignItems: 'center',
 	},
 	modalText: {
 		marginBottom: 15,
 		textAlign: 'center',
-		color: commonStyles.colors.cor1,
+		color: commonStyles.colors.amarelo,
 	},
 	fechar: {
 		color: commonStyles.colors.cor1,
 	},
 	pressable: {
 		padding: 10,
+	},
+	modalBackground: {
+		flex: 1,
+		backgroundColor: 'rgba(0, 0, 0, 0.5)',
+		//justifyContent: 'center',
+		//alignItems: 'center',
 	},
 });

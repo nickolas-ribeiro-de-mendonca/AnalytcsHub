@@ -17,7 +17,7 @@ const modifiedData = dataInitial.map(item => {
 	return modifiedItem;
 });
 
-const SituationApt = () => {
+const SituationApt = (props) => {
 	const [state] = useState({
 		tableHead: tableHead,
 		tableData: modifiedData,
@@ -85,7 +85,7 @@ const SituationApt = () => {
 	return (
 		<ScrollView >
 			<View style={styles.container}>
-			<Header name={'Apontamentos por Empresa'}/>
+			<Header name={'Apontamentos por Empresa'} navigation={props.navigation}/>
 				<View style={styles.drop}>
 					<SelectLists
 						data={list}

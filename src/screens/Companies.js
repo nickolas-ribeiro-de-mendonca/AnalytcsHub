@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {View, StyleSheet, ScrollView, StatusBar} from 'react-native';
 import {VictoryPie} from 'victory-native';
-import { tableData } from '../fonts';
 import commonStyles from '../commonStyles';
 import {Header} from '../components/Header';
 import SelectLists from '../components/SelectList';
@@ -10,51 +9,34 @@ import BarCharts from '../components/BarCharts';
 import {TitleTwo} from '../components/Titles';
 import moment from 'moment';
 import axios from 'axios';
-import { server } from '../common';
+import {server} from '../common';
 
+const Companies = props => {
+	const [selectedCompany, setSelectedCompany] = useState(null);
+	const [selectOrder, setSelectOrder] = useState('');
+	const [filteredData, setFilteredData] = useState([]);
+	const [initialData, setInitialData] = useState([])
+	const head = ['WS','Empresa','CNPJ','Inscrição','Ultima Sinc.','Código Agro','MobServer','Apelido'];
+	const widthArr = [50, 250, 150, 150, 200, 50, 100, 100];
 
-const Companies = (props) => {
-	const [dat, setData] = useState([])
-
-	const fullData = async () => {
-		try{
-			const res = await axios.get(`${server}/empresa`)
-			const shortData= res.data.map(obj =>{
-				return{
-					EMPCODIGO: obj.EMPCODIGO,
-					EMPRAZAOSOCIAL:obj.EMPRAZAOSOCIAL,
-					EMPCNPJ:obj.EMPCNPJ,
-					EMPIE:obj.EMPIE ,
-					EMPULTIMAATUALIZACAO:obj.EMPULTIMAATUALIZACAO,
-					EMPCODIGOAGRO :obj.EMPCODIGOAGRO,
-					EMPVERSAOMOBSERVER:obj.EMPVERSAOMOBSERVER,
-					EMPAPELIDO: obj.EMPAPELIDO,
-					EMPAUTORIZADA: obj.EMPAUTORIZADA
-				}
-			})
-			const final = shortData.filter(obj => obj.EMPAUTORIZADA === 1).map(obj => Object.values(obj));
-			setFilteredData(final)
-		}catch(error){
+	const shortData = async () => {
+		try {
+			const res = await axios.get(`${server}/compShort`)
+			const convet = res.data.map((obj) => {
+				return Object.keys(obj).map((chave) => {
+					return obj[chave];
+				});
+			});
+			setFilteredData(convet);
+			setInitialData(convet)
+		} catch (error) {
 			console.log(error)
 		}
-	}
-   
-	useEffect(() =>{
-		fullData()
-	}, [])
-
+	} 
 	
-	const data = dat
-	const head = ['WS', 'Empresa', 'CNPJ', 'Inscrição', 'Ultima Sinc.', 'Código Agro', 'MobServer', 'Apelido',];
-	const widthA = [50, 250, 150, 150, 150, 50, 100, 100];
-
-	const [state] = useState({
-		tableHead: head,
-		tableData: data,
-		widthArr: widthA,
-	});
-
-
+	useEffect(() => {
+		shortData()
+	}, []);
 
 	const situation = () => {
 		const data = filteredData;
@@ -62,9 +44,8 @@ const Companies = (props) => {
 		var atrasado = 0;
 		var parado = 0;
 		const now = new moment();
-  
 		data.forEach(item => {
-			const lastSinc = new Date((item[4])).getTime();
+			const lastSinc = new Date(item[4]).getTime();
 			const datadiff = (now - lastSinc) / (1000 * 3600);
 			if (datadiff <= 1) normal++;
 			if (datadiff <= 2 && datadiff > 1) atrasado++;
@@ -75,10 +56,8 @@ const Companies = (props) => {
 
 	const countMobServerVersions = data => {
 		const versionsCount = {};
-
 		data.forEach(item => {
 			const version = item[6];
-
 			if (versionsCount[version]) {
 				versionsCount[version]++;
 			} else {
@@ -87,30 +66,33 @@ const Companies = (props) => {
 		});
 		return versionsCount;
 	};
+
 	const ordenador = [
 		{key: 0, value: 'Código'},
 		{key: 1, value: 'Codinome'},
 		{key: 2, value: 'Sincronização'},
 	];
+
 	const selectList = () => {
-		const {tableData} = state;
+		const tableData = initialData;
 		const data = [];
 		data.push({key: '', value: 'Empresas'});
 		tableData.forEach(item => {
-			const existingItem = data.find(obj => obj.value === item[1]);
+			const existingItem = data.find(obj => obj.value === item[7]);
 			if (!existingItem) {
-				data.push({key: item[0], value: item[1]});
+				data.push({key: item[0], value: item[7]});
 			}
 		});
 		return data;
 	};
+
 	const handleSelectCompany = value => {
 		setSelectedCompany(value);
 		if (value !== '') {
-			const foundArray = tableData.filter(item => item[0] === value);
+			const foundArray = initialData.filter(item => item[0] === value);
 			setFilteredData(foundArray);
 		} else {
-			setFilteredData(state.tableData);
+			setFilteredData(initialData);
 		}
 	};
 
@@ -122,6 +104,7 @@ const Companies = (props) => {
 		];
 		return data;
 	};
+
 	const reordenar = value => {
 		switch (value) {
 			case 0:
@@ -131,36 +114,30 @@ const Companies = (props) => {
 			case 1:
 				setSelectOrder(value);
 				setFilteredData(
-					filteredData.sort(function (a, b) {
-						return a[7] > b[7] ? 1 : -1;
-					}),
-				);
+					filteredData.sort(function (a, b) {return a[7] > b[7] ? 1 : -1 }));
 				break;
 			case 2:
 				setSelectOrder(value);
-				setFilteredData(
-					filteredData.sort(function (a, b) {
-						return a[4] > b[4] ? 1 : -1;
-					}),
-				);
+				setFilteredData(filteredData.sort(function (a, b) { return a[4] > b[4] ? 1 : -1 }));
 				break;
-			default:
-				break;
+			default: break;
 		}
 	};
-   const [selectedCompany, setSelectedCompany] = useState(null);
-	const [selectOrder, setSelectOrder] = useState('');
-	const [filteredData, setFilteredData] = useState(state.tableData);
-
+	
 	const versionsCount = countMobServerVersions(filteredData);
+
 	const dataPie = Object.keys(versionsCount).map(version => ({
 		x: version,
 		y: versionsCount[version],
-      label: `\n ${versionsCount[version]} \n ${version} \n`
+		label: `\n ${versionsCount[version]} \n ${version} \n`,
 	}));
+
+	const formatRowDate = row => {
+		const formattedDate = moment(row[4]).format("DD/MM/YY - HH:mm:ss");
+		return [row[0], row[1], row[2],row[3], formattedDate,row[5],row[6],row[7]]
+	}
 	
 	return (
-		
 		<ScrollView style={{backgroundColor: commonStyles.colors.cor1}}>
 			<StatusBar
 				hidden={false}
@@ -171,7 +148,7 @@ const Companies = (props) => {
 
 			<View style={styles.container}>
 				<Header name={'Sincronização'} navigation={props.navigation} />
-				
+
 				<View style={styles.listView}>
 					<SelectLists
 						data={selectList}
@@ -189,9 +166,9 @@ const Companies = (props) => {
 
 				<View>
 					<Tables
-						tableHead={state.tableHead}
-                  tableData={filteredData}
-						widthArr={state.widthArr}
+						tableHead={head}
+						tableData={filteredData.map(formatRowDate)}
+						widthArr={widthArr}
 					/>
 				</View>
 
@@ -217,8 +194,7 @@ const Companies = (props) => {
 							labels: {
 								fill: 'white',
 								fontSize: 12,
-                        textAnchor:'middle',
-                        
+								textAnchor: 'middle',
 							},
 						}}
 					/>
