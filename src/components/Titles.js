@@ -5,7 +5,7 @@ import { color } from "react-native-reanimated";
 
 const TitleOne = (props) => {
     return (
-        <Text style={styles.titleOne}>{props.title}</Text>
+        <Text style={[styles.titleOne, {color: props.color ? props.color : commonStyles.colors.white}]}>{props.title}</Text>
     )
 }
 const TitleTwo = (props) => {

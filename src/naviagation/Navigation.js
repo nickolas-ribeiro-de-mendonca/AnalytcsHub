@@ -7,11 +7,12 @@ import commonStyles from '../commonStyles';
 import SituationApt from '../screens/SituationApt';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import Login from '../screens/Login';
+import LoginOrApp from '../screens/LoginOrApp';
 
 const Tab = createMaterialTopTabNavigator();
 const Stack = createStackNavigator();
 
-const MyTabs = () => {
+const MyTabs = props => {
 	return (
 		<Tab.Navigator
 			style={{backgroundColor: commonStyles.colors.cor1}}
@@ -24,6 +25,8 @@ const MyTabs = () => {
 					borderTopRightRadius: 15,
 					borderTopLeftRadius: 15,
 				},
+				tabBarItemStyle: {width: 140},
+				tabBarScrollEnabled: true,
 				tabBarLabelStyle: {fontSize: 15},
 				tabBarActiveTintColor: commonStyles.colors.white,
 				tabBarInactiveTintColor: commonStyles.colors.lightGray,
@@ -50,7 +53,7 @@ const MyTabs = () => {
 					);
 				},
 			})}>
-			<Tab.Screen name="Empresas" component={Companies} />
+			<Tab.Screen name="Empresas" component={Companies}></Tab.Screen>
 			<Tab.Screen name="Apt Emp" component={SituationApt} />
 			<Tab.Screen name="Apt Func" component={Situation} />
 		</Tab.Navigator>
@@ -60,6 +63,7 @@ const MyTabs = () => {
 const AuthNavigator = () => {
 	return (
 		<Stack.Navigator screenOptions={{headerShown: false}}>
+			<Stack.Screen name='LoginOrApp' component={LoginOrApp}/>
 			<Stack.Screen name="Login">
 				{props => <Login {...props} navigation={props.navigation} />}
 			</Stack.Screen>

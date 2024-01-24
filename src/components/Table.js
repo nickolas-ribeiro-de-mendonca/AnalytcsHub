@@ -1,53 +1,42 @@
-import React, {Component} from 'react';
-import {StyleSheet, View, ScrollView} from 'react-native';
+import React, {Component, useState, forwardRef, useImperativeHandle} from 'react';
+import {StyleSheet, View, ScrollView, } from 'react-native';
 import {Table, Row, Rows} from 'react-native-table-component';
 import commonStyles from '../commonStyles';
 
-export default class Tables extends Component {
-	constructor(props) {
-		super(props);
-		this.state = {
-			tableHead: props.tableHead,
-			tableData: props.tableData,
-			widthArr: props.widthArr,
-		};
-	}
-	componentDidUpdate(prevProps) {
-		if (prevProps.tableData !== this.props.tableData) {
-			this.setState({ tableData: this.props.tableData });
-		}
-	}
+const Tables = (props, ref) => {
+	const [lista, setLista] = useState([]);
 
-	render() {
-		const state = this.state;
-		return (
-			<View style={styles.container}>
-				<ScrollView horizontal={true}>
-					<View>
+	const { tableHead, widthArr } = props;
+    useImperativeHandle(ref, () => ({
+        setLista
+    }));
+	return (
+		<View style={styles.container}>
+			<ScrollView horizontal={true}>
+				<View>
+					<Table borderStyle={styles.table}>
+						<Row
+							data={tableHead}
+							widthArr={widthArr}
+							style={styles.head}
+							textStyle={styles.textHead}
+						/>
+					</Table>
+					<ScrollView nestedScrollEnabled={true}>
 						<Table borderStyle={styles.table}>
-							<Row
-								data={state.tableHead}
-								widthArr={state.widthArr}
-								style={styles.head}
-								textStyle={styles.textHead}
+							<Rows
+								data={lista}
+								widthArr={widthArr}
+								style={styles.row}
+								textStyle={styles.text}
 							/>
 						</Table>
-						<ScrollView nestedScrollEnabled={true}>
-							<Table borderStyle={styles.table}>								
-								<Rows
-									data={state.tableData}
-									widthArr={state.widthArr}
-									style={styles.row}
-									textStyle={styles.text}
-								/>								
-							</Table>
-						</ScrollView>
-					</View>
-				</ScrollView>
-			</View>
-		);
-	}
-}
+					</ScrollView>
+				</View>
+			</ScrollView>
+		</View>
+	);
+};
 
 const styles = StyleSheet.create({
 	container: {
@@ -62,7 +51,7 @@ const styles = StyleSheet.create({
 	},
 	head: {
 		height: 50,
-		backgroundColor: commonStyles.colors.cor2
+		backgroundColor: commonStyles.colors.cor2,
 	},
 	textHead: {
 		textAlign: 'center',
@@ -79,3 +68,5 @@ const styles = StyleSheet.create({
 		height: 28,
 	},
 });
+
+export default forwardRef(Tables);

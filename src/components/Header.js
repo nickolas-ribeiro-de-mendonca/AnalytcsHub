@@ -13,11 +13,9 @@ import {CommonActions} from '@react-navigation/native';
 import {TitleTwo} from './Titles';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import {SelectList} from 'react-native-dropdown-select-list';
 
-export const Header = ({navigation, name}) => {
+export const Header = ({navigation, name, user}) => {
 	const [modalVisible, setModalVisible] = useState(false);
-
 	const logout = () => {
 		delete axios.defaults.headers.common['Authorization'];
 		AsyncStorage.removeItem('userData');
@@ -41,6 +39,7 @@ export const Header = ({navigation, name}) => {
 			</View>
 			<View style={styles.centeredView}>
 				<Modal
+					statusBarTranslucent= {true}
 					animationType="fade"
 					transparent={true}
 					visible={modalVisible}
@@ -53,6 +52,7 @@ export const Header = ({navigation, name}) => {
 						onPress={() => setModalVisible(!modalVisible)}>
 						<View style={styles.centeredView}>
 							<View style={styles.modalView}>
+								<TitleOne title={user} color={commonStyles.colors.cor2}/>
 								<Pressable style={styles.pressable} onPress={logout}>
 									<TitleTwo
 										title={'Sair'}
@@ -92,17 +92,15 @@ const styles = StyleSheet.create({
 	},
 	centeredView: {
 		flex: 1,
-		position: 'absolute',
-		marginLeft: 208,
-		paddingTop: 40,
+    	justifyContent: 'flex-end',
+		alignItems:'center',
 	},
 	modalView: {
 		backgroundColor: commonStyles.colors.white,
-		borderRadius: 20,
-		paddingHorizontal: 50,
-		borderTopEndRadius: 0,
-
+		borderTopLeftRadius: 23,
+		borderTopRightRadius:23,
 		alignItems: 'center',
+		width: '100%'
 	},
 	modalText: {
 		marginBottom: 15,
@@ -114,11 +112,10 @@ const styles = StyleSheet.create({
 	},
 	pressable: {
 		padding: 10,
+		width: '100%'
 	},
 	modalBackground: {
 		flex: 1,
-		backgroundColor: 'rgba(0, 0, 0, 0.5)',
-		//justifyContent: 'center',
-		//alignItems: 'center',
+		backgroundColor: 'rgba(0, 0, 0, 0.7)',
 	},
 });
