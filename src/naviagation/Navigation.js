@@ -53,9 +53,9 @@ const MyTabs = props => {
 					);
 				},
 			})}>
-			<Tab.Screen name="Empresas" component={Companies}></Tab.Screen>
-			<Tab.Screen name="Apt Emp" component={SituationApt} />
 			<Tab.Screen name="Apt Func" component={Situation} />
+			<Tab.Screen name="Empresas" component={Companies}/>
+			<Tab.Screen name="Apt Emp" component={SituationApt} />
 		</Tab.Navigator>
 	);
 };

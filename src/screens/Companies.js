@@ -4,8 +4,6 @@ import {
 	StyleSheet,
 	ScrollView,
 	StatusBar,
-	ActivityIndicator,
-	Text,
 } from 'react-native';
 import commonStyles from '../commonStyles';
 import {Header} from '../components/Header';
@@ -37,10 +35,12 @@ const Companies = props => {
 		try {
 			const res = await axios.get(`${server}/compShort`);
 			const convert = res.data.map(obj => {
-				return Object.keys(obj).map(chave => {
+				return Object.keys(obj).map(chave => {					
+					console.log(obj[chave])
 					return obj[chave];
 				});
 			});
+			console.log(convert)
 			refFilteredData.current = convert;
 			refInitialData.current = convert
 			retrieveData();	
@@ -111,7 +111,6 @@ const Companies = props => {
 				data.push({key: item[0], value: item[7]});
 			}
 		});
-		
 		return data;
 	};
 
@@ -134,6 +133,7 @@ const Companies = props => {
 			{x: 'Atrasado', y: situation()[1], fill: commonStyles.colors.amarelo},
 			{x: 'Parado', y: situation()[2], fill: commonStyles.colors.vermelho},
 		];
+		
 		return data;
 	};
 
@@ -193,7 +193,7 @@ const Companies = props => {
 		return data;
 	};
 
-	console.log('Renderizou de novo')
+	console.log('Renderizou toda a tela')
 
 	return (
 		<ScrollView style={{backgroundColor: commonStyles.colors.cor1}}>
@@ -227,7 +227,6 @@ const Companies = props => {
 					/>
 				</View>
 				
-
 				<View>
 					<Tables
 						tableHead={head}

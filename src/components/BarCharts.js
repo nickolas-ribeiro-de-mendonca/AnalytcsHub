@@ -5,16 +5,16 @@ import moment from 'moment';
 
 const BarCharts = (props, ref) => {
 	const [dataBar, setDataBar] = useState([]);
-	const { data, colors, xAxis, yAxis, domain} = props;
+	const { xAxis, yAxis, domain} = props;
 	useImperativeHandle(ref, () => ({
 		setDataBar,
 	}));
-	console.log('chamou aqui no funcao')
+
 	return (
 		<VictoryChart
 			domain={domain}
 			animate={{
-				duration: 2000,
+				duration: 3000,
 				onLoad: {duration: 2000},
 			}}>
 			{xAxis && (
@@ -38,18 +38,20 @@ const BarCharts = (props, ref) => {
 					
 				/>
 			)}
-			<VictoryBar
-				width={200}
-				height={200}
-				labels={({datum}) => datum.y.toFixed(0)}
-				data={dataBar}
-				style={{
-					data: {
-					  fill: ({ datum }) => datum.fill
-					},
-					labels: { fill: 'white' },
-				}}
-			/>
+			
+			{dataBar.map((item) => {
+				return(
+					<VictoryBar
+					key={item.x}
+					data={[item]}
+					style={{ data: { fill: item.fill }, labels: { fill: 'white' }} }
+					labels={({ datum }) => datum.y}
+					barRatio={3}
+					cornerRadius={{topLeft: 5, topRight: 5}}
+					/>
+				)
+			})}
+			
 		</VictoryChart>
 	);
 };

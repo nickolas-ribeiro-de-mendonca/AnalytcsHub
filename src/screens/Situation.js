@@ -1,6 +1,6 @@
-import React, {useState, useEffect } from 'react';
+import React, {useState, useEffect, useRef } from 'react';
 import { View, StyleSheet, ScrollView, Dimensions} from 'react-native';
-import {apontadorData, apontadorHead, apontadorWidthArr} from '../fonts';
+import {apontadorData, apontadorHead, apontadorWidthArr, tableData} from '../fonts';
 import commonStyles from '../commonStyles';
 import {Header} from '../components/Header';
 import SelectLists from '../components/SelectList';
@@ -11,6 +11,9 @@ import {Cards} from '../components/Cards';
 
 
 const Situation = (props) => {
+	
+	const refEmpListData = useRef([])
+
 	const [state] = useState({
 		tableHead: apontadorHead,
 		tableData: apontadorData,
@@ -21,6 +24,16 @@ const Situation = (props) => {
 	const [filteredUser, setFilteredUser] = useState(state.tableData);
 	const [selected, setSelected] = useState('');
 	const [selectedUser, setSelectedUser] = useState('');
+
+	const getData = () => {
+		refEmpListData.current = apontadorData
+
+		wsList()
+	}
+
+	useEffect(() => {
+		getData()
+	})
 
 	const apontamentos = filteredData => {
 		let apontamentos = [];
@@ -57,7 +70,7 @@ const Situation = (props) => {
 	};
 
 	const handleSelectCompany = value => {
-		setSelected(value);
+setSelected(value);
 		if (value !== '') {
 			const newList = state.tableData.filter(item => item[0] === value);
 			setFilteredData(newList);
@@ -112,6 +125,10 @@ const Situation = (props) => {
 		return data;
 	};
 
+	const renderizar = () => {
+		refEmpListData.current.setData(wsList())
+	}
+
 	return (
 		<ScrollView>
 			<View style={styles.container}>
@@ -121,6 +138,12 @@ const Situation = (props) => {
 					<SelectLists
 						data={wsList}
 						placeholder={'Empresa'}
+						setSelected={handleSelectCompany}
+						width={150}
+					/>
+					<SelectLists
+						ref={refEmpListData}
+						placeholder={'Empresas'}
 						setSelected={handleSelectCompany}
 						width={150}
 					/>
