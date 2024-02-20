@@ -36,11 +36,10 @@ const Companies = props => {
 			const res = await axios.get(`${server}/compShort`);
 			const convert = res.data.map(obj => {
 				return Object.keys(obj).map(chave => {					
-					console.log(obj[chave])
 					return obj[chave];
 				});
 			});
-			console.log(convert)
+         
 			refFilteredData.current = convert;
 			refInitialData.current = convert
 			retrieveData();	
@@ -104,13 +103,15 @@ const Companies = props => {
 	const selectList = () => {
 		const tableData = refInitialData.current;
 		const data = [];
+      
 		data.push({key: '', value: 'Empresas'});
 		tableData.forEach(item => {
-			const existingItem = data.find(obj => obj.value === item[7]);
+			const existingItem = data.find(obj => obj.value === item[1]);
 			if (!existingItem) {
-				data.push({key: item[0], value: item[7]});
+				data.push({key: item[0], value: item[1]});
 			}
 		});
+     
 		return data;
 	};
 
@@ -171,7 +172,7 @@ const Companies = props => {
 		return Object.keys(countMobServerVersions(refFilteredData.current)).map(version => ({
 		x: version,
 		y: countMobServerVersions(refFilteredData.current)[version],
-		label: `\n ${countMobServerVersions(refFilteredData.current)[version]} \n ${version} \n`,
+		label: `${countMobServerVersions(refFilteredData.current)[version]} \n ${version}`,
 	}))
 	};
 
@@ -194,7 +195,7 @@ const Companies = props => {
 	};
 
 	console.log('Renderizou toda a tela')
-
+   
 	return (
 		<ScrollView style={{backgroundColor: commonStyles.colors.cor1}}>
 			<StatusBar

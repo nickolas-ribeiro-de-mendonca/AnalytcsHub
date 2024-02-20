@@ -38,7 +38,7 @@ const Login = (props) => {
 				})
 			)
 		} catch (error) {
-			showError(error);
+			showError('aqui',error);
 		}
 	};
 	const validations = [];

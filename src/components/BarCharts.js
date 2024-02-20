@@ -15,7 +15,7 @@ const BarCharts = (props, ref) => {
 			domain={domain}
 			animate={{
 				duration: 3000,
-				onLoad: {duration: 2000},
+				onLoad: {duration: 1000},
 			}}>
 			{xAxis && (
 				<VictoryAxis
@@ -45,7 +45,7 @@ const BarCharts = (props, ref) => {
 					key={item.x}
 					data={[item]}
 					style={{ data: { fill: item.fill }, labels: { fill: 'white' }} }
-					labels={({ datum }) => datum.y}
+					labels={({ datum }) => String(Math.round(datum.y))}
 					barRatio={3}
 					cornerRadius={{topLeft: 5, topRight: 5}}
 					/>

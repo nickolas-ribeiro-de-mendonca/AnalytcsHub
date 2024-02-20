@@ -27,7 +27,7 @@ const MyTabs = props => {
 				},
 				tabBarItemStyle: {width: 140},
 				tabBarScrollEnabled: true,
-				tabBarLabelStyle: {fontSize: 15},
+				tabBarLabelStyle: {fontSize: 15, textTransform:'none'},
 				tabBarActiveTintColor: commonStyles.colors.white,
 				tabBarInactiveTintColor: commonStyles.colors.lightGray,
 				tabBarIcon: ({focused, color}) => {
@@ -35,9 +35,9 @@ const MyTabs = props => {
 
 					if (route.name === 'Empresas') {
 						iconName = 'building';
-					} else if (route.name === 'Apt Func') {
+					} else if (route.name === 'Colaborador') {
 						iconName = 'user-alt';
-					} else if (route.name === 'Apt Emp') {
+					} else if (route.name === 'Apontamentos') {
 						iconName = 'users';
 					}
 					return (
@@ -53,9 +53,9 @@ const MyTabs = props => {
 					);
 				},
 			})}>
-			<Tab.Screen name="Apt Func" component={Situation} />
-			<Tab.Screen name="Empresas" component={Companies}/>
-			<Tab.Screen name="Apt Emp" component={SituationApt} />
+         <Tab.Screen name="Empresas" component={Companies}  />
+			<Tab.Screen name="Colaborador" component={Situation} />
+			<Tab.Screen name="Apontamentos" component={SituationApt} />
 		</Tab.Navigator>
 	);
 };
