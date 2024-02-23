@@ -1,7 +1,6 @@
 import React, {forwardRef, useState, useImperativeHandle} from 'react';
 import {VictoryAxis,VictoryBar,VictoryChart} from 'victory-native';
 import commonStyles from '../commonStyles';
-import moment from 'moment';
 
 const BarCharts = (props, ref) => {
 	const [dataBar, setDataBar] = useState([]);
@@ -14,8 +13,8 @@ const BarCharts = (props, ref) => {
 		<VictoryChart
 			domain={domain}
 			animate={{
-				duration: 3000,
-				onLoad: {duration: 1000},
+				duration: 2000,
+				onLoad: {duration: 500},
 			}}>
 			{xAxis && (
 				<VictoryAxis

@@ -120,6 +120,7 @@ const Companies = props => {
 		if (value !== '') {
 			const foundArray = refInitialData.current.filter(item => item[0] === value);
 			refFilteredData.current = foundArray;
+			console.log(foundArray)
 			selectedCompanyRef.current = value
 		} else {
 			refFilteredData.current = refInitialData.current;

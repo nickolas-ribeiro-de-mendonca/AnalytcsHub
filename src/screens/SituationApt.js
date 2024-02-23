@@ -4,7 +4,7 @@ import SelectLists from '../components/SelectList';
 import {tableData} from '../situacaoData';
 import Tables from '../components/Table';
 import commonStyles from '../commonStyles';
-import {Cards} from '../components/Cards';
+import Cards from '../components/Cards';
 import BarCharts from '../components/BarCharts';
 import {TitleTwo} from '../components/Titles';
 import {Header} from '../components/Header';
@@ -27,7 +27,10 @@ const SituationApt = props => {
 	const selectedEmpRef = useRef();
 	const tableRef = useRef([]);
 	const table2Ref = useRef([]);
-   const barChartRef = useRef()
+	const barChartRef = useRef()
+	const cardExpRef = useRef()
+	const cardEditRef = useRef()
+	const cardValidRef = useRef()
 
 	const tableHead = [
 		'WS',
@@ -41,15 +44,6 @@ const SituationApt = props => {
 		'Total',
 	];
 	const widthArr = [50, 200, 100, 100, 100, 100, 100, 100, 100];
-
-	const [state] = useState({
-		tableHead: tableHead,
-		tableData: modifiedData,
-		widthArr: widthArr,
-	});
-
-	const [filteredData, setFilteredData] = useState(state.tableData);
-
 	const getAppointments = async () => {
 		try {
 			const res = await axios.get(`${server}/appointments`);
@@ -102,22 +96,27 @@ const SituationApt = props => {
 	};
 
 	const percentExp = () => {
-		const data = dataTotals();
-		return ((data[2] * 100) / (data[0] + data[1] + data[2])).toFixed(2);
+		const data = totals();
+		const exp = ((data[2] / (data[0] + data[1] + data[2]))*100).toFixed(2)
+		return  exp
 	};
 	const percentEdit = () => {
-		const data = dataTotals();
-		return ((100 * data[4]) / data[2]).toFixed(2);
+		const data = totals();
+		if(data[4] > 0 ) return ((100 * data[4]) / data[2]).toFixed(2);
+		return 0
 	};
+	const validAppointments = () => {
+		const data = totals()
+		return data[0] + data[1] +data[2]
+	}
 	const dataChartBar = () => {
       const x = totals()
 		const data = [
-			{x: 'Conf', y: x[0]},
-			{x: 'Calc', y: x[1]},
-			{x: 'Exp', y: x[2]},
-			{x: 'Can', y: x[3]},
+			{x: 'Conf', y: x[0], fill: commonStyles.colors.lightGray},
+			{x: 'Calc', y: x[1], fill: commonStyles.colors.azul},
+			{x: 'Exp', y: x[2], fill: commonStyles.colors.verde} ,
+			{x: 'Can', y: x[3], fill: commonStyles.colors.vermelho},
 		];
-      console.log(data)
 		return data;
 	};
 
@@ -125,28 +124,35 @@ const SituationApt = props => {
 		selectListRef.current.setData(selectListEmp());
 		tableRef.current.setLista(setTable());
 		table2Ref.current.setLista([totals()])
-      barChartRef.current.setDataBar(dataChartBar())
-		
+      	barChartRef.current.setDataBar(dataChartBar())
+		cardExpRef.current.setDataCard(percentExp())
+		cardEditRef.current.setDataCard(percentEdit())
+		cardValidRef.current.setDataCard(validAppointments)
 	};
 
 	const setTable = () => {
-		return filteredDataRef.current;
+		const data = filteredDataRef.current
+		if(data){
+			data.forEach(item => {
+				if(item[7] > item[6] ) item[7] = item[7] - item[6]
+			})
+		}
+		return data;
 	};
 
 	const totals = () => {
 		const data = filteredDataRef.current;
-      var totals = [0,200,400,3,200,0]
-      if(data){
-		   data.map(item => {
-            totals[0] = parseInt(totals[0]) + parseInt(item[3])
-            totals[1] = parseInt(totals[1]) + parseInt(item[4])
-            totals[2] = parseInt(totals[2]) + parseInt(item[5])
-            totals[3] = parseInt(totals[3]) + parseInt(item[6])
-            totals[4] = parseInt(totals[4]) + parseInt(item[7])
-            totals[5] = parseInt(totals[0]) + parseInt(totals[2]) + parseInt(totals[3])
-         })
-      }
-		console.log(totals);
+      	var totals = [0,0,0,0,0,0]
+      	if(data){
+			data.map(item => {
+            	totals[0] = parseInt(totals[0]) + parseInt(item[3])
+            	totals[1] = parseInt(totals[1]) + parseInt(item[4])
+            	totals[2] = parseInt(totals[2]) + parseInt(item[5])
+            	totals[3] = parseInt(totals[3]) + parseInt(item[6])
+            	totals[4] = parseInt(totals[4]) + parseInt(item[7])
+            	totals[5] = parseInt(totals[0]) + parseInt(totals[1]) + parseInt(totals[2])
+        })
+    	}
       return totals
 	};
 
@@ -190,8 +196,8 @@ const SituationApt = props => {
 				<TitleTwo title={'Totalizadores'} />
 				<View>
 					<Tables
-						tableHead={['Conf', 'Calc', 'Exp', 'Can', 'Edit', 'Validos']}
-						widthArr={[60, 60, 60, 60, 60, 60]}
+						tableHead={['Confirmado', 'Calculado', 'Exportado', 'Cancelado', 'Editado']}
+						widthArr={[75, 75, 75, 75, 75]}
 						ref={table2Ref}
 					/>
 				</View>
@@ -199,37 +205,45 @@ const SituationApt = props => {
 					<BarCharts
 						xAxis={true}
 						yAxis={false}
-                  ref={barChartRef}
-						//data={dataChartBar()}
+                  		ref={barChartRef}
                   domain={{x: [0.5, 4.5]}}
 						colors={[
 							commonStyles.colors.verde,
 							commonStyles.colors.amarelo,
 							commonStyles.colors.vermelho,
-                     commonStyles.colors.cor4,
+                     		commonStyles.colors.cor4,
 						]}
 					/>
 				</View>
 				<View style={styles.cards}>
 					<Cards
-						data={percentExp()}
+						ref={cardExpRef}
+						
 						bgcolor={
 							percentExp() > 70
 								? `${commonStyles.colors.verde}`
 								: percentExp() > 50
-								? `${commonStyles.colors.cor4}`
+							? `${commonStyles.colors.cor4}`
 								: `${commonStyles.colors.cor5}`
 						}
 						title={'% Exp.'}
 						symbol={'%'}
 					/>
 					<Cards
-						data={percentEdit()}
+						ref={cardEditRef}
 						title={'%Edit/Exp'}
 						symbol={'%'}
 						bgcolor={`${commonStyles.colors.cor2}`}
 					/>
 				</View>
+				<View style={styles.cards2}>
+					<Cards
+						ref={cardValidRef}
+						title={'Apontamentos Validos'}
+						bgcolor={`${commonStyles.colors.cor3}`}
+					/>
+				</View>
+				
 			</View>
 		</ScrollView>
 	);
@@ -249,6 +263,12 @@ const styles = StyleSheet.create({
 		padding: 20,
 		flexDirection: 'row',
 		justifyContent: 'space-around',
+	},
+	cards2:{
+		flexDirection:'row',
+		alignItems:'center',
+		justifyContent:'center',
+		paddingBottom: 20
 	},
 	chartBars: {
 		alignContent: 'center',

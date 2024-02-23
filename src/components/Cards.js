@@ -1,15 +1,21 @@
-import React, {Component} from 'react';
+import React, { forwardRef, useImperativeHandle, useState} from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 import commonStyles from '../commonStyles';
 
-export const Cards = (props) => {
+const Cards = (props, ref) => {
+    const [dataCard, setDataCard] = useState()
+    const {title,bgcolor,data,symbol} = props
+    useImperativeHandle(ref, ()=>({
+        setDataCard
+    }))
+
 	return (
-		<View style={[styles.container,{backgroundColor: props.bgcolor}]}>
+		<View style={[styles.container,{backgroundColor: bgcolor}]}>
             <Text style={styles.title}>
-                {props.title}
+                {title}
             </Text>
-			<Text style={styles.text} >
-                {props.data}{props.symbol}
+			<Text style={styles.text}>
+                {dataCard}{symbol}
             </Text>
             
 		</View>
@@ -37,3 +43,5 @@ const styles = StyleSheet.create({
 		color: commonStyles.colors.white,
 	},
 });
+
+export default forwardRef(Cards);

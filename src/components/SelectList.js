@@ -5,14 +5,21 @@ import commonStyles from '../commonStyles';
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import {faChevronDown} from '@fortawesome/free-solid-svg-icons/faChevronDown';
 
+
 const SelectLists = (props, ref) => {
+	
     const [data, setData] = useState([])
     const {placeholder, setSelected, width} = props
-    
+	
     useImperativeHandle(ref, () => ({
-        setData
-    }))
-
+        setData,
+		getData,
+		
+	}))
+	const getData = () =>{
+		return data
+	}
+	
 	return (
 		<View style={styles.container}>
 			<SelectList

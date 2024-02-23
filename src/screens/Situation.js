@@ -4,15 +4,33 @@ import {apontadorData, apontadorHead, apontadorWidthArr, tableData} from '../fon
 import commonStyles from '../commonStyles';
 import {Header} from '../components/Header';
 import SelectLists from '../components/SelectList';
+import ModalDrop from '../components/ModalDrop'
 import Tables from '../components/Table';
 import BarCharts from '../components/BarCharts';
 import {TitleTwo} from '../components/Titles';
-import {Cards} from '../components/Cards';
+import Cards from '../components/Cards';
+import { server } from '../common';
+import axios from 'axios';
 
 
 const Situation = (props) => {
 	
-	const refEmpListData = useRef([])
+	const initialDataRef = useRef([])
+	const initialLaborsRef = useRef([])
+	const filteredDataRef = useRef()
+	const selectListEmpRef = useRef()
+	const dropdownEmpListRef = useRef([])
+	const dropdownUserListRef = useRef([])
+	const setSelectedUserRef = useRef()
+
+	const barChartRef = useRef()
+	
+	const selectListLaborRef = useRef()
+
+	const tableOneRef = useRef([])
+	const tableTwoRef = useRef([])	
+	const cardDataExpRef = useRef()
+	const cardDataUsers = useRef()
 
 	const [state] = useState({
 		tableHead: apontadorHead,
@@ -20,87 +38,166 @@ const Situation = (props) => {
 		widthArr: apontadorWidthArr,
 	});
 
-	const [filteredData, setFilteredData] = useState(state.tableData);
-	const [filteredUser, setFilteredUser] = useState(state.tableData);
-	const [selected, setSelected] = useState('');
-	const [selectedUser, setSelectedUser] = useState('');
-
-	const getData = () => {
-		refEmpListData.current = apontadorData
-
-		wsList()
+	const getAppointmentsLabor = async () => {
+		try {
+			const res = await axios.get(`${server}/appointmentsLabor`)
+			const objToArray = res.data.map(obj => {
+				return Object.keys(obj).map(key => {
+					return obj[key]
+				})
+			})
+			initialDataRef.current = objToArray
+			filteredDataRef.current = objToArray
+			laborData()
+			renderizar()
+		} catch (error) {
+			console.log('getAppointmentLabor'+ error)
+		}
 	}
 
 	useEffect(() => {
-		getData()
+		getAppointmentsLabor()
 	})
 
-	const apontamentos = filteredData => {
-		let apontamentos = [];
-		for (let i = 0; i < filteredData.length; i++) {
-			for (let j = 0; j < 4; j++) {
-				if (j === 3) apontamentos.push(filteredData[i][j]);
-			}
-		}
-		return apontamentos;
-	};
+	const dropdownEmp = () => {
+		const initialData = initialDataRef.current
+		const data = []
+		data.push('Empresas')
+		initialData.forEach(emp => {
+			const existingItem = data.find(element => element === emp[1])
+			if(!existingItem) data.push(emp[1])
+		})
+		return data
+	}
 
-	const wsList = () => {
-		const {tableData} = state;
-		const data = [{key: '', value: 'Empresa'}];
-		tableData.forEach(item => {
-			const existingItem = data.find(obj => obj.value === item[0]);
+	const selectListEmp = () => {
+		const initialData = initialDataRef.current
+		const data = []
+		data.push({key: 'Empresa', value: 'Empresa'})
+		initialData.forEach(item => {
+			const existingItem = data.find(obj => obj.value === item[1]);
 			if (!existingItem) {
-				data.push({key: item[0], value: item[0]});
+				data.push({key: item[0], value: item[1]});
 			}
 		});
 		return data;
 	};
 
-	const userList = () => {
-		const tableData = filteredUser;
-		const data = [{key: '', value: 'Usuário'}];
-		tableData.forEach(item => {
+	const laborData = () => {
+		const labors = []
+		var labor = []
+		filteredDataRef.current.map(item => {
+			labor.push(item[0],item[3],item[4],item[11],item[10])
+			labors.push(labor)
+			labor = []
+		})
+		initialLaborsRef.current = labors
+	}
+
+	const initialDropdownUser = () => {
+		const initialData = initialLaborsRef.current
+		const data = ['Usuários']
+		initialData.forEach(user => {
+			const existingItem = data.find(element => element === user[2])
+			if(!existingItem) data.push(user[2])
+		})
+		return data
+	}
+
+	const selectListUser = () => {
+		const initialData = initialLaborsRef.current;
+		const data = [{key: 'Usuário', value: 'Usuário'}];
+		initialData.forEach(item => {
 			const existingItem = data.find(obj => obj.value === item[2]);
 			if (!existingItem) {
-				data.push({key: item[1], value: item[2]});
+				data.push({key: item[2], value: item[2]});
 			}
 		});
 		return data;
 	};
 
-	const handleSelectCompany = value => {
-setSelected(value);
-		if (value !== '') {
-			const newList = state.tableData.filter(item => item[0] === value);
-			setFilteredData(newList);
-			setFilteredUser(newList);
-			apontamentos(filteredData);
-		} else {
-			setFilteredData(state.tableData);
-			handleSlectedUser('')
-			setFilteredUser(state.tableData)
-			apontamentos(state.tableData);
-		}
-	};
+	const tableOneData = () => {
+		const data = filteredDataRef.current
+		const newData = data.map(line => {
+			let partesDoNome = line[4].trim().split(/\s+/);
+			let novoNome = partesDoNome.slice(0, 2).join(" ");
+			return [line[0],line[3],novoNome,line[11],line[10].toFixed(2)]
+		})
+		return newData
+	}
 
-	const handleSlectedUser = value => {
-		setSelectedUser(value);
-		if (value !== '') {
-			const newList = filteredUser.filter(item => item[1] === value);
-			setFilteredData(newList);
-			apontamentos(filteredData);
-		}else {
-			setFilteredData(filteredUser);
-			apontamentos(filteredUser);
+	const tableTowData = () => {
+		const data = filteredDataRef.current
+		var newData = [0,0,0,0]
+		data.map(line => {
+			newData[0] = parseInt(newData[0]) + parseInt(line[5])
+			newData[1] = parseInt(newData[1]) + parseInt(line[6])
+			newData[2] = parseInt(newData[2]) + parseInt(line[7])
+			newData[3] = parseInt(newData[3]) + parseInt(line[11])
+		})
+		return newData
+	}
+
+	const barChart = () => {
+		const data = filteredDataRef.current
+		var newData = [0,0,0,0]
+		data.map(line => {
+			newData[0] = parseInt(newData[0]) + parseInt(line[5])
+			newData[1] = parseInt(newData[1]) + parseInt(line[6])
+			newData[2] = parseInt(newData[2]) + parseInt(line[7])
+			newData[3] = parseInt(newData[3]) + parseInt(line[11])
+		})
+		return newData
+	}
+	const cardOne = () => {
+		const data = filteredDataRef.current
+		var exportado = 0
+		var total = 0
+		data.map(exp => {
+			total = parseInt(exp[7]) + parseInt(exp[6]) +parseInt(exp[7])
+			exportado = parseInt(exp[7])	
+		})
+		if(total > 0){
+			return (exportado/total * 100).toFixed(2)
 		}
+		return 0
+	}
+	const cardTwo = () => {
+		const data = filteredDataRef.current
+		return data.length
+	}
+	
+	const handleSelectCompany = value => {
+		var newLaborList = []
+		if (value !== 'Empresas') {
+			const newData = initialDataRef.current.filter(item => item[1] === value);
+			filteredDataRef.current = newData
+			newLaborList = newData.map(labor => {
+				 return labor[4]
+			})
+		} else {
+			filteredDataRef.current = initialDataRef.current
+			dropdownUserListRef.current.teste("Usuários")
+			newLaborList =  selectListUser()
+		}
+		renderizar()
+		dropdownUserListRef.current.setList(() => {return newLaborList})
+	};
+	
+
+	const handleSlectedUser = value => {		
+		if (value !== 'Usuários') {
+			const newData = initialDataRef.current.filter(item => item[4] === value);
+			filteredDataRef.current = newData
+		}else {
+			console.log('entrou no else')
+			initialDropdownUser()
+		}
+		renderizar()
+
 	};
 
 	const tableHead = ['Confirmado', 'Calculado', 'Exportado', 'Total'];
-	const aponts = apontamentos(filteredData).reduce(
-		(total, elemento) => total + elemento,
-		0,
-	);
 
 	const getWidthArr = () => {
 		const windowWidth = Dimensions.get('window').width;
@@ -108,25 +205,26 @@ setSelected(value);
 		return widthArr;
 	};
 
-	const random1 = Math.random() * 0.5;
-	const random2 = Math.random() * 0.3;
-	const conf = aponts * random1.toFixed(1);
-	const calc = aponts * random2.toFixed(1);
-	const expt = aponts - conf - calc;
-	const pExpt = (expt / aponts) * 100;
-	const dataRow = [conf, calc, expt, aponts];
-
 	const dataChartBar = () => {
+		const teste = barChart()
 		const data = [
-			{x: 'Confirmado', y: dataRow[0]},
-			{x: 'Calculado', y: dataRow[1]},
-			{x: 'Exportado', y: dataRow[2]},
+			{x: 'Confirmado', y: teste[0], fill: commonStyles.colors.cor3},
+			{x: 'Calculado', y: teste[1], fill: commonStyles.colors.azul},
+			{x: 'Exportado', y: teste[2], fill: commonStyles.colors.verde},
 		];
 		return data;
 	};
 
 	const renderizar = () => {
-		refEmpListData.current.setData(wsList())
+		//selectListEmpRef.current.setData(selectListEmp())
+		//selectListLaborRef.current.setData(selectListUser())
+		dropdownEmpListRef.current.setList(dropdownEmp())
+		dropdownUserListRef.current.setList(initialDropdownUser())
+		tableOneRef.current.setLista(tableOneData())
+		tableTwoRef.current.setLista([tableTowData()])
+		barChartRef.current.setDataBar(dataChartBar())
+		cardDataExpRef.current.setDataCard(cardOne())
+		cardDataUsers.current.setDataCard(cardTwo())
 	}
 
 	return (
@@ -135,36 +233,45 @@ setSelected(value);
 				<Header name={'Apontamento por Apontador'} navigation={props.navigation} />
 
 				<View style={styles.drop}>
-					<SelectLists
-						data={wsList}
+					
+					{/*<SelectLists
+						ref={selectListEmpRef}
 						placeholder={'Empresa'}
 						setSelected={handleSelectCompany}
 						width={150}
 					/>
 					<SelectLists
-						ref={refEmpListData}
-						placeholder={'Empresas'}
-						setSelected={handleSelectCompany}
-						width={150}
-					/>
-					<SelectLists
-						data={userList}
+						ref={selectListLaborRef}
 						placeholder={'Usuário'}
 						setSelected={handleSlectedUser}
 						width={150}
+					/>*/}
+
+					<ModalDrop
+						ref={dropdownEmpListRef}
+						initialOption={"Empresas"}
+						initialScrollIndex={0}
+						handle={handleSelectCompany}
 					/>
+					<ModalDrop
+						ref={dropdownUserListRef}
+						initialOption={"Usuários"}
+						initialScrollIndex={0}
+						handle={handleSlectedUser}
+					/>
+
 				</View>
 
 				<Tables
 					tableHead={state.tableHead}
 					widthArr={state.widthArr}
-					tableData={filteredData}
+					ref={tableOneRef}
 				/>
 
 				<TitleTwo title={'Totalizadores'} />
 				<Tables
+					ref={tableTwoRef}
 					tableHead={tableHead}
-					tableData={[dataRow]}
 					widthArr={[
 						getWidthArr(),
 						getWidthArr(),
@@ -174,33 +281,28 @@ setSelected(value);
 				/>
 
 				<BarCharts
+					ref={barChartRef}
 					xAxis={true}
 					yAxis={false}
-					data={dataChartBar()}
-					colors={[
-						commonStyles.colors.azul,
-						commonStyles.colors.lightGray,
-						commonStyles.colors.verde,
-						commonStyles.colors.vermelho,
-					]}
+					domain={{x: [0.5, 3.5]}}
 				/>
 				<View style={styles.cards}>
 					<Cards
 						title={'Dados Exportados'}
-						data={pExpt.toFixed(1)}
+						ref={cardDataExpRef}
 						symbol={'%'}
 						bgcolor={
-							pExpt >= 70
+							cardDataExpRef >= 70
 								? commonStyles.colors.verde
-									: pExpt >= 50
+									: cardDataExpRef >= 50
 									? commonStyles.colors.cor4
 								: commonStyles.colors.cor5
 						}
 					/>
 					<Cards
-						title={'Apontadores'}
-						data={filteredData.length}
+						title={'Usuários'}
 						bgcolor={commonStyles.colors.cor2}
+						ref={cardDataUsers}
 					/>
 				</View>
 			</View>
