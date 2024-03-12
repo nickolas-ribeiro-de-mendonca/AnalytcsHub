@@ -10,6 +10,7 @@ import {TitleTwo} from '../components/Titles';
 import {Header} from '../components/Header';
 import axios from 'axios';
 import {server} from '../common';
+import ModalDrop from '../components/ModalDrop';
 
 const dataInitial = tableData.sort((a, b) => a[9] - b[9]);
 const modifiedData = dataInitial.map(item => {
@@ -21,7 +22,7 @@ const modifiedData = dataInitial.map(item => {
 
 const SituationApt = props => {
 	const initialDataRef = useRef();
-	const selectListRef = useRef();
+	const selectListRef = useRef([]);
 	const arrayDataRef = useRef();
 	const filteredDataRef = useRef();
 	const selectedEmpRef = useRef();
@@ -45,6 +46,7 @@ const SituationApt = props => {
 	];
 	const widthArr = [50, 200, 100, 100, 100, 100, 100, 100, 100];
 	const getAppointments = async () => {
+		selectListRef.current.setSelectedOption("Empresas")
 		try {
 			const res = await axios.get(`${server}/appointments`);
 			const objToArray = res.data.map(obj => {
@@ -69,22 +71,22 @@ const SituationApt = props => {
 
 	const selectListEmp = () => {
 		const initialData = initialDataRef.current;
-		const finalData = [];
-
-		finalData.push({key: '', value: 'Empresas'});
+		const finalData = [];		
+		finalData.push('Empresas');
 		initialData.forEach(item => {
 			const existingItem = finalData.find(obj => obj.value === item[1]);
 			if (!existingItem) {
-				finalData.push({key: item[0], value: item[1]});
+				finalData.push(item[1]);
 			}
 		});
 		return finalData;
 	};
 
 	const handleSelect = value => {
-		if (value !== '') {
+		if (value !== 'Empresas') {
+			console.log("entrou 1")
 			const foundArray = initialDataRef.current.filter(
-				item => item[0] === value,
+				item => item[1] === value,
 			);
 			filteredDataRef.current = foundArray;
 			selectedEmpRef.current = value;
@@ -121,7 +123,7 @@ const SituationApt = props => {
 	};
 
 	const first = () => {
-		selectListRef.current.setData(selectListEmp());
+		selectListRef.current.setList(selectListEmp())
 		tableRef.current.setLista(setTable());
 		table2Ref.current.setLista([totals()])
       	barChartRef.current.setDataBar(dataChartBar())
@@ -179,12 +181,11 @@ const SituationApt = props => {
 					navigation={props.navigation}
 				/>
 				<View style={styles.drop}>
-					<SelectLists
+					<ModalDrop
 						ref={selectListRef}
-						placeholder={'Empresas'}
-						setSelected={handleSelect}
-						width={150}
+						handle={handleSelect}
 					/>
+
 				</View>
 				<View>
 					<Tables

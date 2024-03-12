@@ -15,8 +15,8 @@ import AuthInput from '../components/AuthInput';
 import { CommonActions } from "@react-navigation/native";
 
 const Login = (props) => {
-	const [email, onChangeEmail] = useState('teste@email.com');
-	const [password, onChangePassword] = useState('123456');
+	const [email, onChangeEmail] = useState('Nickolas');
+	const [password, onChangePassword] = useState('BFBB56BEE68D99AFFAA64F189045D5F2');
 
 	const signin = async () => {     
 		try {

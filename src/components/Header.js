@@ -1,21 +1,21 @@
 import {TitleOne} from './Titles';
-import {
-	View,
-	StyleSheet,
-	TouchableOpacity,
-	Modal,
-	Pressable,
-} from 'react-native';
+import {View,StyleSheet,TouchableOpacity,Modal,	Pressable, ActivityIndicator} from 'react-native';
 import commonStyles from '../commonStyles';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import {CommonActions} from '@react-navigation/native';
 import {TitleTwo} from './Titles';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import axios from 'axios';
 
-export const Header = ({navigation, name, user}) => {
+export const Header = ({navigation, name, onRefreshData }) => {
+
 	const [modalVisible, setModalVisible] = useState(false);
+	const [userName, setUserName] = useState('')
+
+	const [loading, setLoading] = useState(false); 
+
 	const logout = () => {
 		delete axios.defaults.headers.common['Authorization'];
 		AsyncStorage.removeItem('userData');
@@ -27,6 +27,31 @@ export const Header = ({navigation, name, user}) => {
 		);
 	};
 
+	const userData = async () => {
+		try {
+			var userData = '';
+			const value = await AsyncStorage.getItem('userData');
+			if (value !== null) {
+				userData = JSON.parse(value);
+				setUserName(userData.name)
+			} 
+		} catch (error) {
+			console.log(error);
+		}
+	};
+	
+	useEffect(() => {
+		userData()
+	}, []);
+
+	const handleRefreshData = async () => {
+		setLoading(true); 
+		setTimeout(async () => {
+			await onRefreshData();
+			setLoading(false);
+		}, 1000);
+	};
+	
 	return (
 		<View>
 			<View style={styles.container}>
@@ -43,16 +68,25 @@ export const Header = ({navigation, name, user}) => {
 					animationType="fade"
 					transparent={true}
 					visible={modalVisible}
-					onRequestClose={() => {
-						Alert.alert('Modal has been closed.');
-						setModalVisible(!modalVisible);
-					}}>
+					onRequestClose={() => {setModalVisible(!modalVisible)}}>
 					<Pressable
 						style={styles.modalBackground}
 						onPress={() => setModalVisible(!modalVisible)}>
 						<View style={styles.centeredView}>
 							<View style={styles.modalView}>
-								<TitleOne title={user} color={commonStyles.colors.cor2}/>
+								<TitleOne title={userName} color={commonStyles.colors.cor2}/>
+								<Pressable style={styles.pressable} 
+									onPress={handleRefreshData}
+								>	
+								<View style={{flexDirection:'row', marginLeft:'37%'}}>
+									<TitleTwo title={'Atualizar Dados'}color={commonStyles.colors.cor2}/>
+									{loading ? (
+                                        <ActivityIndicator size="small" color={commonStyles.colors.cor2} />
+                                    ) : <></>}
+									
+									
+								</View>
+								</Pressable>
 								<Pressable style={styles.pressable} onPress={logout}>
 									<TitleTwo
 										title={'Sair'}

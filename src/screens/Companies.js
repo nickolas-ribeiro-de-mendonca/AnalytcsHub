@@ -13,24 +13,23 @@ import BarCharts from '../components/BarCharts';
 import {TitleTwo} from '../components/Titles';
 import moment from 'moment';
 import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import {server} from '../common';
 import DataPie from '../components/DataPie';
 
 const Companies = props => {
 	
-	const [user, setUser] = useState('')
 	const refInitialData = useRef([])
 	const refDataList = useRef([]);
 	const refFilteredData = useRef([]);
 	const refTabela = useRef();
 	const refBarChart = useRef();
 	const refDataPie = useRef([])
-	const head = ['WS','Empresa','CNPJ','Inscrição','Ultima Sinc.','Código Agro','MobServer','Apelido',	];
-	const widthArr = [50, 250, 150, 150, 200, 50, 100, 100];
 	const selectedCompanyRef = useRef(null);
 	const refOrderList = useRef([])
-	
+	const head = ['WS','Empresa','CNPJ','Inscrição','Ultima Sinc.','Código Agro','MobServer','Apelido',	];
+	const widthArr = [50, 250, 150, 150, 200, 50, 100, 100];
+
 	const shortData = async () => {
 		try {
 			const res = await axios.get(`${server}/compShort`);
@@ -42,21 +41,7 @@ const Companies = props => {
          
 			refFilteredData.current = convert;
 			refInitialData.current = convert
-			retrieveData();	
 			ListaAlterada()
-		} catch (error) {
-			console.log(error);
-		}
-	};
-
-	const retrieveData = async () => {
-		try {
-			var userData = '';
-			const value = await AsyncStorage.getItem('userData');
-			if (value !== null) {
-				userData = JSON.parse(value);
-				setUser(userData.name)
-			} 
 		} catch (error) {
 			console.log(error);
 		}
@@ -74,10 +59,10 @@ const Companies = props => {
 		const now = new moment();
 		data.forEach(item => {
 			const lastSinc = new Date(item[4]).getTime();
-			const datadiff = (now - lastSinc) / (1000 * 3600);
-			if (datadiff <= 1) normal++;
-			if (datadiff <= 2 && datadiff > 1) atrasado++;
-			if (datadiff > 2) parado++;
+			const datadiff = (now - lastSinc) / (1000 * 60);
+			if (datadiff <= 5) normal++;
+			if (datadiff <= 15 && datadiff > 5) atrasado++;
+			if (datadiff > 15) parado++;
 		});
 		return [normal, atrasado, parado];
 	};
@@ -195,7 +180,9 @@ const Companies = props => {
 		return data;
 	};
 
-	console.log('Renderizou toda a tela')
+	const handleRefreshData = () => {
+		shortData()
+	}
    
 	return (
 		<ScrollView style={{backgroundColor: commonStyles.colors.cor1}}>
@@ -210,7 +197,7 @@ const Companies = props => {
 				<Header
 					name={'Sincronização'}
 					navigation={props.navigation}
-					user={user}
+					onRefreshData={handleRefreshData}
 				/>
 
 				<View style={styles.listView}>

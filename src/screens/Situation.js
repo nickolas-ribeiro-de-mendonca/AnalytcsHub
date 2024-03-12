@@ -3,7 +3,6 @@ import { View, StyleSheet, ScrollView, Dimensions} from 'react-native';
 import {apontadorData, apontadorHead, apontadorWidthArr, tableData} from '../fonts';
 import commonStyles from '../commonStyles';
 import {Header} from '../components/Header';
-import SelectLists from '../components/SelectList';
 import ModalDrop from '../components/ModalDrop'
 import Tables from '../components/Table';
 import BarCharts from '../components/BarCharts';
@@ -14,31 +13,21 @@ import axios from 'axios';
 
 
 const Situation = (props) => {
-	
+	const [initialdata , setInitialData] = useState([])
 	const initialDataRef = useRef([])
 	const initialLaborsRef = useRef([])
 	const filteredDataRef = useRef()
-	const selectListEmpRef = useRef()
 	const dropdownEmpListRef = useRef([])
 	const dropdownUserListRef = useRef([])
-	const setSelectedUserRef = useRef()
-
 	const barChartRef = useRef()
-	
-	const selectListLaborRef = useRef()
-
 	const tableOneRef = useRef([])
 	const tableTwoRef = useRef([])	
 	const cardDataExpRef = useRef()
 	const cardDataUsers = useRef()
 
-	const [state] = useState({
-		tableHead: apontadorHead,
-		tableData: apontadorData,
-		widthArr: apontadorWidthArr,
-	});
-
 	const getAppointmentsLabor = async () => {
+		dropdownEmpListRef.current.setSelectedOption("Empresas")
+		dropdownUserListRef.current.setSelectedOption("Usuários")
 		try {
 			const res = await axios.get(`${server}/appointmentsLabor`)
 			const objToArray = res.data.map(obj => {
@@ -47,9 +36,11 @@ const Situation = (props) => {
 				})
 			})
 			initialDataRef.current = objToArray
+			setInitialData(objToArray)
 			filteredDataRef.current = objToArray
 			laborData()
 			renderizar()
+			
 		} catch (error) {
 			console.log('getAppointmentLabor'+ error)
 		}
@@ -57,7 +48,7 @@ const Situation = (props) => {
 
 	useEffect(() => {
 		getAppointmentsLabor()
-	})
+	}, [initialDataRef])
 
 	const dropdownEmp = () => {
 		const initialData = initialDataRef.current
@@ -67,21 +58,9 @@ const Situation = (props) => {
 			const existingItem = data.find(element => element === emp[1])
 			if(!existingItem) data.push(emp[1])
 		})
+		
 		return data
 	}
-
-	const selectListEmp = () => {
-		const initialData = initialDataRef.current
-		const data = []
-		data.push({key: 'Empresa', value: 'Empresa'})
-		initialData.forEach(item => {
-			const existingItem = data.find(obj => obj.value === item[1]);
-			if (!existingItem) {
-				data.push({key: item[0], value: item[1]});
-			}
-		});
-		return data;
-	};
 
 	const laborData = () => {
 		const labors = []
@@ -103,18 +82,6 @@ const Situation = (props) => {
 		})
 		return data
 	}
-
-	const selectListUser = () => {
-		const initialData = initialLaborsRef.current;
-		const data = [{key: 'Usuário', value: 'Usuário'}];
-		initialData.forEach(item => {
-			const existingItem = data.find(obj => obj.value === item[2]);
-			if (!existingItem) {
-				data.push({key: item[2], value: item[2]});
-			}
-		});
-		return data;
-	};
 
 	const tableOneData = () => {
 		const data = filteredDataRef.current
@@ -175,49 +142,54 @@ const Situation = (props) => {
 			newLaborList = newData.map(labor => {
 				 return labor[4]
 			})
+			
 		} else {
 			filteredDataRef.current = initialDataRef.current
-			dropdownUserListRef.current.teste("Usuários")
-			newLaborList =  selectListUser()
+			newLaborList =  initialDropdownUser()
+			getAppointmentsLabor()
 		}
 		renderizar()
-		dropdownUserListRef.current.setList(() => {return newLaborList})
+		dropdownUserListRef.current.setList(newLaborList)
 	};
 	
 
 	const handleSlectedUser = value => {		
+		var oldLaborList = dropdownUserListRef.current.getList()
 		if (value !== 'Usuários') {
-			const newData = initialDataRef.current.filter(item => item[4] === value);
+			const empSelected = dropdownEmpListRef.current.getSelected()
+			const empCodigo = (initialDataRef.current.filter(item => item[4] == value))[0][0]
+			const usuNome = (initialDataRef.current.filter(item => item[4] == value))[0][4]
+			const newData = initialDataRef.current.filter(item => item[4] === usuNome);
 			filteredDataRef.current = newData
+			if(empSelected !== "Empresas"){
+				oldLaborList = initialDataRef.current.filter(item => item[0] === empCodigo).map(labor => {
+					return labor[4]
+				})
+			}
 		}else {
-			console.log('entrou no else')
-			initialDropdownUser()
+			filteredDataRef.current = initialDataRef.current
 		}
 		renderizar()
-
+		dropdownUserListRef.current.setList(oldLaborList)
 	};
-
-	const tableHead = ['Confirmado', 'Calculado', 'Exportado', 'Total'];
 
 	const getWidthArr = () => {
 		const windowWidth = Dimensions.get('window').width;
-		const widthArr = (windowWidth - 33) / tableHead.length;
+		const widthArr = (windowWidth - 33) / 4;
 		return widthArr;
 	};
 
 	const dataChartBar = () => {
-		const teste = barChart()
+		const y = barChart()
 		const data = [
-			{x: 'Confirmado', y: teste[0], fill: commonStyles.colors.cor3},
-			{x: 'Calculado', y: teste[1], fill: commonStyles.colors.azul},
-			{x: 'Exportado', y: teste[2], fill: commonStyles.colors.verde},
+			{x: 'Confirmado', y: y[0], fill: commonStyles.colors.cor3},
+			{x: 'Calculado', y: y[1], fill: commonStyles.colors.azul},
+			{x: 'Exportado', y: y[2], fill: commonStyles.colors.verde},
 		];
 		return data;
 	};
 
 	const renderizar = () => {
-		//selectListEmpRef.current.setData(selectListEmp())
-		//selectListLaborRef.current.setData(selectListUser())
 		dropdownEmpListRef.current.setList(dropdownEmp())
 		dropdownUserListRef.current.setList(initialDropdownUser())
 		tableOneRef.current.setLista(tableOneData())
@@ -233,45 +205,30 @@ const Situation = (props) => {
 				<Header name={'Apontamento por Apontador'} navigation={props.navigation} />
 
 				<View style={styles.drop}>
-					
-					{/*<SelectLists
-						ref={selectListEmpRef}
-						placeholder={'Empresa'}
-						setSelected={handleSelectCompany}
-						width={150}
-					/>
-					<SelectLists
-						ref={selectListLaborRef}
-						placeholder={'Usuário'}
-						setSelected={handleSlectedUser}
-						width={150}
-					/>*/}
-
 					<ModalDrop
-						ref={dropdownEmpListRef}
 						initialOption={"Empresas"}
 						initialScrollIndex={0}
 						handle={handleSelectCompany}
+						ref={dropdownEmpListRef}
 					/>
 					<ModalDrop
-						ref={dropdownUserListRef}
 						initialOption={"Usuários"}
 						initialScrollIndex={0}
 						handle={handleSlectedUser}
+						ref={dropdownUserListRef}
 					/>
-
 				</View>
 
 				<Tables
-					tableHead={state.tableHead}
-					widthArr={state.widthArr}
+					tableHead={["WS", "ID", "Apontador", "Apontamentos", "Tempo de Envio"]}
+					widthArr={[48, 48, 95, 95, 95]}
 					ref={tableOneRef}
 				/>
 
 				<TitleTwo title={'Totalizadores'} />
 				<Tables
 					ref={tableTwoRef}
-					tableHead={tableHead}
+					tableHead={['Confirmado', 'Calculado', 'Exportado', 'Total']}
 					widthArr={[
 						getWidthArr(),
 						getWidthArr(),

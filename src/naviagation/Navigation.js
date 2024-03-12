@@ -17,7 +17,7 @@ const MyTabs = props => {
 		<Tab.Navigator
 			style={{backgroundColor: commonStyles.colors.cor1}}
 			tabBarPosition="bottom"
-			initialRouteName="Colaborador"
+			initialRouteName="Empresas"
 			screenOptions={({route}) => ({
 				tabBarStyle: {
 					backgroundColor: commonStyles.colors.cor2,
