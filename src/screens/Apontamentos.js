@@ -45,6 +45,7 @@ const SituationApt = props => {
 		'Total',
 	];
 	const widthArr = [50, 200, 100, 100, 100, 100, 100, 100, 100];
+	
 	const getAppointments = async () => {
 		selectListRef.current.setSelectedOption("Empresas")
 		try {
@@ -172,6 +173,9 @@ const SituationApt = props => {
 	const reduceTotal = i => {
 		return 10;
 	};
+	const handleRefreshData = () => {
+		getAppointments()
+	}
 
 	return (
 		<ScrollView>
@@ -179,6 +183,7 @@ const SituationApt = props => {
 				<Header
 					name={'Apontamentos por Empresa'}
 					navigation={props.navigation}
+					onRefreshData={handleRefreshData}
 				/>
 				<View style={styles.drop}>
 					<ModalDrop

@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
 const retrieveData = async () => {
-    console.log("Chamou")
+    
     try {
         var userData = '';
         const value = await AsyncStorage.getItem('userData');

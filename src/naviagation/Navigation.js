@@ -1,13 +1,14 @@
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
-import Companies from '../screens/Companies';
-import Situation from '../screens/Situation';
+import Companies from '../screens/Empresa';
+import Situation from '../screens/Colaborador';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import commonStyles from '../commonStyles';
-import SituationApt from '../screens/SituationApt';
+import SituationApt from '../screens/Apontamentos';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import Login from '../screens/Login';
 import LoginOrApp from '../screens/LoginOrApp';
+import EstatisiticaGerais from '../screens/EstatisticasGerais';
 
 const Tab = createMaterialTopTabNavigator();
 const Stack = createStackNavigator();
@@ -17,7 +18,7 @@ const MyTabs = props => {
 		<Tab.Navigator
 			style={{backgroundColor: commonStyles.colors.cor1}}
 			tabBarPosition="bottom"
-			initialRouteName="Empresas"
+			initialRouteName="Estatistica Gerais"
 			screenOptions={({route}) => ({
 				tabBarStyle: {
 					backgroundColor: commonStyles.colors.cor2,
@@ -39,7 +40,10 @@ const MyTabs = props => {
 						iconName = 'user-alt';
 					} else if (route.name === 'Apontamentos') {
 						iconName = 'users';
+					} else if (route.name === 'Estatistica Gerais') {
+						iconName = 'tractor'
 					}
+
 					return (
 						<FontAwesome5
 							name={iconName}
@@ -56,6 +60,7 @@ const MyTabs = props => {
          	<Tab.Screen name="Empresas" component={Companies}  />
 			<Tab.Screen name="Apontamentos" component={SituationApt} />
 			<Tab.Screen name="Colaborador" component={Situation} />
+			<Tab.Screen name="Estatistica Gerais" component={EstatisiticaGerais} />
 		</Tab.Navigator>
 	);
 };

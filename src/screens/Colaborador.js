@@ -1,6 +1,5 @@
 import React, {useState, useEffect, useRef } from 'react';
 import { View, StyleSheet, ScrollView, Dimensions} from 'react-native';
-import {apontadorData, apontadorHead, apontadorWidthArr, tableData} from '../fonts';
 import commonStyles from '../commonStyles';
 import {Header} from '../components/Header';
 import ModalDrop from '../components/ModalDrop'
@@ -198,11 +197,17 @@ const Situation = (props) => {
 		cardDataExpRef.current.setDataCard(cardOne())
 		cardDataUsers.current.setDataCard(cardTwo())
 	}
-
+	const handleRefreshData = () => {
+		getAppointmentsLabor()
+	}
 	return (
 		<ScrollView>
 			<View style={styles.container}>
-				<Header name={'Apontamento por Apontador'} navigation={props.navigation} />
+				<Header 
+					name={'Apontamento por Apontador'} 
+					navigation={props.navigation} 
+					onRefreshData={handleRefreshData}
+				/>
 
 				<View style={styles.drop}>
 					<ModalDrop

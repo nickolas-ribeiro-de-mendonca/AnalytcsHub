@@ -49,7 +49,7 @@ export const Header = ({navigation, name, onRefreshData }) => {
 		setTimeout(async () => {
 			await onRefreshData();
 			setLoading(false);
-		}, 1000);
+		}, 1500);
 	};
 	
 	return (
@@ -79,9 +79,9 @@ export const Header = ({navigation, name, onRefreshData }) => {
 									onPress={handleRefreshData}
 								>	
 								<View style={{flexDirection:'row', marginLeft:'37%'}}>
-									<TitleTwo title={'Atualizar Dados'}color={commonStyles.colors.cor2}/>
+									<TitleTwo title={'Atualizar Dados  '}color={commonStyles.colors.cor2}/>
 									{loading ? (
-                                        <ActivityIndicator size="small" color={commonStyles.colors.cor2} />
+                                        <ActivityIndicator size="small" color={commonStyles.colors.lightGray} />
                                     ) : <></>}
 									
 									

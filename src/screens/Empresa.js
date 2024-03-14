@@ -16,6 +16,8 @@ import axios from 'axios';
 
 import {server} from '../common';
 import DataPie from '../components/DataPie';
+import { noAuto } from '@fortawesome/fontawesome-svg-core';
+import Cards from '../components/Cards';
 
 const Companies = props => {
 	
@@ -27,8 +29,11 @@ const Companies = props => {
 	const refDataPie = useRef([])
 	const selectedCompanyRef = useRef(null);
 	const refOrderList = useRef([])
+	const refCardMedia = useRef()
+	const refCardDesvio = useRef()
 	const head = ['WS','Empresa','CNPJ','Inscrição','Ultima Sinc.','Código Agro','MobServer','Apelido',	];
 	const widthArr = [50, 250, 150, 150, 200, 50, 100, 100];
+
 
 	const shortData = async () => {
 		try {
@@ -38,7 +43,6 @@ const Companies = props => {
 					return obj[chave];
 				});
 			});
-         
 			refFilteredData.current = convert;
 			refInitialData.current = convert
 			ListaAlterada()
@@ -66,6 +70,35 @@ const Companies = props => {
 		});
 		return [normal, atrasado, parado];
 	};
+
+	const average = () => {
+		const data = refFilteredData.current
+		const now = new moment()
+		var media = 0
+		data.forEach(item => {
+			const last = new Date(item[4]).getTime()
+			const dataDiff = (now - last) / (60000)
+			media = media + dataDiff
+		})
+		return (media / data.length).toFixed(2)
+	}
+
+	const standardDeviation = () => {
+		const data = refFilteredData.current
+		const now = new moment()
+		const n = data.length
+		const media = average()
+		var sum = 0
+
+		data.forEach(item => {
+			const last = new Date(item[4]).getTime()
+			const dataDiff = (now - last) / (60000)
+			const pow = Math.pow((dataDiff - media),2)
+
+			sum = sum + pow
+		})
+		return (Math.pow((sum/n),(0.5))).toFixed(2)
+	}
 
 	const countMobServerVersions = data => {
 		const versionsCount = {};
@@ -105,7 +138,6 @@ const Companies = props => {
 		if (value !== '') {
 			const foundArray = refInitialData.current.filter(item => item[0] === value);
 			refFilteredData.current = foundArray;
-			console.log(foundArray)
 			selectedCompanyRef.current = value
 		} else {
 			refFilteredData.current = refInitialData.current;
@@ -168,6 +200,8 @@ const Companies = props => {
 		refDataPie.current.setDataPie(dataPie())
 		refOrderList.current.setData(ordenador())	
 		refDataList.current.setData(selectList())
+		refCardMedia.current.setDataCard(average())
+		refCardDesvio.current.setDataCard(standardDeviation())
 	}
 
 	const formatedList = () => {
@@ -242,6 +276,26 @@ const Companies = props => {
 				<View>
 					<DataPie height={300} ref={refDataPie} />
 				</View>
+				<View style={styles.cardView}>
+					<Cards
+							ref={refCardMedia}
+							title={'Média'}
+							symbol={' min'}
+							bgcolor={
+								average() <= 5
+									? `${commonStyles.colors.verde}`
+									: average() <= 15
+								? `${commonStyles.colors.cor4}`
+									: `${commonStyles.colors.cor5}`
+							}
+					/>
+					<Cards
+							ref={refCardDesvio}
+							symbol={' min'}
+							title={'Desvio Padrão'}
+							bgcolor={`${commonStyles.colors.cor3}`}
+					/>
+				</View>
 			</View>
 		</ScrollView>
 	);
@@ -260,4 +314,9 @@ const styles = StyleSheet.create({
 		justifyContent: 'space-around',
 		alignItems: 'center',
 	},
+	cardView: {
+		padding:20,
+		flexDirection:'row',
+		justifyContent:'space-around'
+	}
 });

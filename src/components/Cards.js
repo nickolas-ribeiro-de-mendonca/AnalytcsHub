@@ -4,10 +4,11 @@ import commonStyles from '../commonStyles';
 
 const Cards = (props, ref) => {
     const [dataCard, setDataCard] = useState()
-    const {title,bgcolor,data,symbol} = props
+    const {title,bgcolor,symbol} = props
     useImperativeHandle(ref, ()=>({
         setDataCard
     }))
+
 
 	return (
 		<View style={[styles.container,{backgroundColor: bgcolor}]}>

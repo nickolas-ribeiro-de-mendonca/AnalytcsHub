@@ -18,7 +18,8 @@ const ModalDrop = (props, ref) => {
         getSelected,
 		getList,
 		handleOptionSelect, 
-		onSelect
+		onSelect,
+		setSelected
 	}));
 
 	const handleOptionSelect = (index, value) => {
@@ -28,6 +29,9 @@ const ModalDrop = (props, ref) => {
     const getSelected = () => {
         return selectedOption
     }
+	const 	setSelected = (value) =>{
+		setSelectedOption(value)
+	}
 
 	const getList = () => {
 		return list

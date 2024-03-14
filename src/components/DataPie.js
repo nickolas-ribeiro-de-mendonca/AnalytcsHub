@@ -4,17 +4,18 @@ import {VictoryPie} from 'victory-native';
 
 const DataPie = (props, ref) => {
     const [dataPie, setDataPie] = useState([]);
-	const {height} = props;
+	const {height,colorScale} = props;
 	useImperativeHandle(ref, () => ({
 		setDataPie
 	}));
-
 	return (
 		<VictoryPie
 			data={dataPie}
-			colorScale="qualitative"
+			colorScale={colorScale}
 			height={height}
+			
 			style={{
+				
 				labels: {
 					fill: 'white',
 					fontSize: 12,
