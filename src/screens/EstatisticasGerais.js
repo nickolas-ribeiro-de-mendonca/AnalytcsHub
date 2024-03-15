@@ -9,6 +9,8 @@ import Tables from '../components/Table';
 import ModalDrop from '../components/ModalDrop';
 import BarCharts from '../components/BarCharts';
 import DataPie from '../components/DataPie';
+import  LineChart  from '../components/LineChart';
+
 
 const EstatisiticaGerais = props => {
 	const initalDataRef = useRef([]);
@@ -17,7 +19,8 @@ const EstatisiticaGerais = props => {
     const dropdownEmpRef = useRef([])
     const dropdownMonthRef = useRef([])
     const barChartRef = useRef([])
-    const dataPieRef =useRef([])
+    const dataPieRef = useRef([])
+	const lineAppRef = useRef([])
 
     var emp = 'Empresas'
     var month = 'Meses'
@@ -85,6 +88,9 @@ const EstatisiticaGerais = props => {
         if(emp !== "Empresas" && month === "Meses"){
             filteredDataRef.current = initalDataRef.current.filter( item => item[1] === emp)
         }
+
+
+
         if(emp === "Empresas" && month !== "Meses"){
             filteredDataRef.current = initalDataRef.current.filter( item => item[2] === month)
         }
@@ -129,6 +135,7 @@ const EstatisiticaGerais = props => {
 			{x: 'Aplicado', y: y[1], fill: commonStyles.colors.azul},
 			{x: 'Cancelado', y: y[2], fill: commonStyles.colors.vermelho},
 		];
+
 		return data;
 	};
 
@@ -143,18 +150,52 @@ const EstatisiticaGerais = props => {
         return data
 	}	
 
+	const dataLineChart = () => {
+		const dataAgro = []
+		const dataApp = []
+		const yAgro = []
+		const yApp = []
+		const x = getMonths()
+		
+		x.shift()
+		
+		x.map(month => {
+			let totalAgro = 0
+			let totalApp = 0
+			filteredDataRef.current.map(line => {
+				if(line[2] === month){
+					totalAgro = totalAgro + parseFloat(line[3])
+					totalApp = totalApp + parseFloat(line[4]) 
+				}
+			})
+			yAgro.push(totalAgro)
+			yApp.push(totalApp)
+		})
+		
+		for (let index = 0; index < x.length; index++) {
+			dataAgro.push({x: x[index], y: yAgro[index]})
+			dataApp.push({x: x[index], y: yApp[index]})
+		}
+		return [dataAgro,dataApp]
+	}
+
+	const handleRefreshData = () => {
+		getData()
+	}
+
 	const refs = () => {
         dropdownEmpRef.current.setList(getCompanies())
         dropdownMonthRef.current.setList(getMonths())
 		tableDataRef.current.setLista(tableList());
         barChartRef.current.setDataBar(dataChartBar())
         dataPieRef.current.setDataPie(dataPie())
-        
+		lineAppRef.current.setData(dataLineChart())
 	};
     
     const windowDimensions = () => {
         return parseFloat(Dimensions.get('window').width)
     }
+
     const tableWidthArr = () => {
         const width = windowDimensions()
         return [
@@ -172,7 +213,7 @@ const EstatisiticaGerais = props => {
 				<Header
 					name={'Estatísticas Gerais'}
 					navigation={props.navigation}
-					//onRefreshData={handleRefreshData}
+					onRefreshData={handleRefreshData}
 				/>
                 <View style={styles.drop}>
                     <ModalDrop
@@ -199,12 +240,19 @@ const EstatisiticaGerais = props => {
                 />
 
                 <View>
-			    		<DataPie
-                        height={300} ref={dataPieRef}
-                        colorScale={[commonStyles.colors.verde, commonStyles.colors.azul]}
-                        />
+			    	<DataPie
+                    	height={300} 
+						ref={dataPieRef}
+                    	colorScale={[commonStyles.colors.verde, commonStyles.colors.azul]}
+                    />
 			    </View>
-
+				<LineChart
+					ref={lineAppRef} 
+					colors ={[commonStyles.colors.verde, commonStyles.colors.azul]}
+					legend={["Agro","A3"]}
+					legendX={150}
+					legendY={300}
+				/>
 			</View>
 		</ScrollView>
 	);
