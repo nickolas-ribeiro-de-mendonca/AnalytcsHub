@@ -1,9 +1,9 @@
 export default {
 	fontFamily: 'Roboto-Light',
 	colors: {
-	cor1: 'rgb(13, 27, 42)',
-      cor2: 'rgb(27, 38, 59)',
-      cor3: 'rgb(65, 90, 119)',
+	cor1: '#0D1B2A',
+      cor2: '#1B263B',
+      cor3: '#415A77',
       cor4: '#EE9B00', 
       cor5: '#AE2012',
       cor6: '#9B2226',

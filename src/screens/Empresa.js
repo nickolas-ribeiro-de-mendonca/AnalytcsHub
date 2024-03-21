@@ -1,51 +1,58 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {
-	View,
-	StyleSheet,
-	ScrollView,
-	StatusBar,
-} from 'react-native';
+import {View, StyleSheet, ScrollView, StatusBar} from 'react-native';
 import commonStyles from '../commonStyles';
 import {Header} from '../components/Header';
 import SelectLists from '../components/SelectList';
 import Tables from '../components/Table';
 import BarCharts from '../components/BarCharts';
 import {TitleTwo} from '../components/Titles';
-import moment from 'moment';
+import moment, { min } from 'moment';
 import axios from 'axios';
 
 import {server} from '../common';
 import DataPie from '../components/DataPie';
-import { noAuto } from '@fortawesome/fontawesome-svg-core';
+import {noAuto} from '@fortawesome/fontawesome-svg-core';
 import Cards from '../components/Cards';
+import { validatePathConfig } from '@react-navigation/native';
+import { filterConfig } from 'react-native-gesture-handler/lib/typescript/handlers/gestureHandlerCommon';
+import ModalDrop from '../components/ModalDrop';
 
 const Companies = props => {
-	
-	const refInitialData = useRef([])
+	const refInitialData = useRef([]);
 	const refDataList = useRef([]);
 	const refFilteredData = useRef([]);
 	const refTabela = useRef();
 	const refBarChart = useRef();
-	const refDataPie = useRef([])
+	const refDataPie = useRef([]);
 	const selectedCompanyRef = useRef(null);
-	const refOrderList = useRef([])
-	const refCardMedia = useRef()
-	const refCardDesvio = useRef()
-	const head = ['WS','Empresa','CNPJ','Inscrição','Ultima Sinc.','Código Agro','MobServer','Apelido',	];
+	const refOrderList = useRef([]);
+	const refCardMedia = useRef();
+	const refCardDesvio = useRef();
+	const head = [
+		'WS',
+		'Empresa',
+		'CNPJ',
+		'Inscrição',
+		'Ultima Sinc.',
+		'Código Agro',
+		'MobServer',
+		'Apelido',
+	];
 	const widthArr = [50, 250, 150, 150, 200, 50, 100, 100];
 
-
 	const shortData = async () => {
+		refDataList.current.setSelectedOption("Empresas")
+		refOrderList.current.setSelectedOption("Código")
 		try {
 			const res = await axios.get(`${server}/compShort`);
 			const convert = res.data.map(obj => {
-				return Object.keys(obj).map(chave => {					
+				return Object.keys(obj).map(chave => {
 					return obj[chave];
 				});
 			});
 			refFilteredData.current = convert;
-			refInitialData.current = convert
-			ListaAlterada()
+			refInitialData.current = convert;
+			ListaAlterada();
 		} catch (error) {
 			console.log(error);
 		}
@@ -72,33 +79,47 @@ const Companies = props => {
 	};
 
 	const average = () => {
-		const data = refFilteredData.current
-		const now = new moment()
-		var media = 0
+		const data = refFilteredData.current;
+		const now = new moment();
+		var media = 0;
 		data.forEach(item => {
-			const last = new Date(item[4]).getTime()
-			const dataDiff = (now - last) / (60000)
-			media = media + dataDiff
-		})
-		return (media / data.length).toFixed(2)
+			const last = new Date(item[4]).getTime();
+			const dataDiff = (now - last) / 60000;
+			media = media + dataDiff;
+		});
+
+		return (media / data.length).toFixed(2);
+	};
+
+	const color = (val) => {
+		let color = ''
+		const media = average()
+		if (media <= 5) {
+			color = commonStyles.colors.verde
+		}else if (media < 15){
+			color =  commonStyles.colors.amarelo
+		}else{
+			color = commonStyles.colors.cor5
+		}
+		return color
 	}
 
 	const standardDeviation = () => {
-		const data = refFilteredData.current
-		const now = new moment()
-		const n = data.length
-		const media = average()
-		var sum = 0
+		const data = refFilteredData.current;
+		const now = new moment();
+		const n = data.length;
+		const media = average();
+		var sum = 0;
 
 		data.forEach(item => {
-			const last = new Date(item[4]).getTime()
-			const dataDiff = (now - last) / (60000)
-			const pow = Math.pow((dataDiff - media),2)
+			const last = new Date(item[4]).getTime();
+			const dataDiff = (now - last) / 60000;
+			const pow = Math.pow(dataDiff - media, 2);
 
-			sum = sum + pow
-		})
-		return (Math.pow((sum/n),(0.5))).toFixed(2)
-	}
+			sum = sum + pow;
+		});
+		return Math.pow(sum / n, 0.5).toFixed(2);
+	};
 
 	const countMobServerVersions = data => {
 		const versionsCount = {};
@@ -114,36 +135,33 @@ const Companies = props => {
 	};
 
 	const ordenador = () => {
-		const data = [{key: 0, value: 'Código'},{key: 1, value: 'Codinome'},{key: 2, value: 'Sincronização'}];
-		return data
-	} 
+		const data = ['Código', 'Codinome', 'Sincronização'];
+		return data;
+	};
 
 	const selectList = () => {
 		const tableData = refInitialData.current;
 		const data = [];
-      
-		data.push({key: '', value: 'Empresas'});
+		data.push('Empresas');
 		tableData.forEach(item => {
-			const existingItem = data.find(obj => obj.value === item[1]);
+			const existingItem = data.find(obj => obj === item[1]);
 			if (!existingItem) {
-				data.push({key: item[0], value: item[1]});
+				data.push(item[1]);
 			}
 		});
-     
 		return data;
 	};
 
 	const handleSelectCompany = value => {
-		
-		if (value !== '') {
-			const foundArray = refInitialData.current.filter(item => item[0] === value);
+		if (value !== 'Empresas') {
+			const foundArray = refInitialData.current.filter(
+				item => item[1] === value,
+			);
 			refFilteredData.current = foundArray;
-			selectedCompanyRef.current = value
 		} else {
 			refFilteredData.current = refInitialData.current;
-			selectedCompanyRef.current = value
 		}
-		ListaAlterada()
+		ListaAlterada();
 	};
 
 	const dataChartBar = () => {
@@ -152,18 +170,18 @@ const Companies = props => {
 			{x: 'Atrasado', y: situation()[1], fill: commonStyles.colors.amarelo},
 			{x: 'Parado', y: situation()[2], fill: commonStyles.colors.vermelho},
 		];
-		
+
 		return data;
 	};
 
 	const reordenar = value => {
 		switch (value) {
-			case 0:
+			case "Código":
 				refFilteredData.current = refFilteredData.current.sort(
 					(a, b) => a[0] - b[0],
 				);
 				break;
-			case 1:
+			case "Codinome":
 				refFilteredData.current = refFilteredData.current.sort(function (
 					a,
 					b,
@@ -171,7 +189,7 @@ const Companies = props => {
 					return a[7] > b[7] ? 1 : -1;
 				});
 				break;
-			case 2:
+			case "Sincronização":
 				refFilteredData.current = refFilteredData.current.sort(function (
 					a,
 					b,
@@ -183,43 +201,94 @@ const Companies = props => {
 				break;
 		}
 
+		ListaAlterada();
+	};
+
+	const dataPie = () => {
+		return Object.keys(countMobServerVersions(refFilteredData.current)).map(
+			version => ({
+				x: version,
+				y: countMobServerVersions(refFilteredData.current)[version],
+				label: `${
+					countMobServerVersions(refFilteredData.current)[version]
+				} \n ${version}`,
+			}),
+		);
+	};
+	console.log(dataPie())
+
+	const handleBarClick = (value) => {
+		let minStart = 0;
+		let minFinish = 0
+		switch (value) {
+			case (value = 'Normal'):
+				minStart = 0
+				minFinish = 5
+				break;
+			case (value = 'Atrasado'):
+				minStart = 6;
+				minFinish = 15
+				break;
+			case (value = 'Parado'):
+				minStart = 16;
+				minFinish = 99999999
+				break;
+			default:
+				break;
+		}
+		const data = refFilteredData.current.filter(item => {
+			const datadiff = moment().diff(item[4], 'minute') 
+			if (datadiff >= minStart && datadiff <= minFinish) {
+				return item;
+			}
+		});
+		refFilteredData.current = data
 		ListaAlterada()
 	};
 
-	const dataPie =  () => {
-		return Object.keys(countMobServerVersions(refFilteredData.current)).map(version => ({
-		x: version,
-		y: countMobServerVersions(refFilteredData.current)[version],
-		label: `${countMobServerVersions(refFilteredData.current)[version]} \n ${version}`,
-	}))
-	};
-
-	const ListaAlterada = () => {
-		refTabela.current.setLista(formatedList())
-		refBarChart.current.setDataBar(dataChartBar())
-		refDataPie.current.setDataPie(dataPie())
-		refOrderList.current.setData(ordenador())	
-		refDataList.current.setData(selectList())
-		refCardMedia.current.setDataCard(average())
-		refCardDesvio.current.setDataCard(standardDeviation())
+	const handlePieClick=(value) => {
+		refFilteredData.current = refInitialData.current.filter(
+			item => item[6] === value
+		)
+		ListaAlterada()
 	}
+
+ 	const ListaAlterada = () => {
+		refTabela.current.setLista(formatedList());
+		refBarChart.current.setDataBar(dataChartBar());
+		refDataPie.current.setDataPie(dataPie());
+		refOrderList.current.setList(ordenador());
+		refDataList.current.setList(selectList());
+		refCardMedia.current.setDataCard(average());
+		refCardMedia.current.setColor(color());
+		refCardDesvio.current.setDataCard(standardDeviation());
+	};
 
 	const formatedList = () => {
 		const data = [];
 		refFilteredData.current.map(row => {
 			const formattedDate = moment(row[4]).format('DD/MM/YY - HH:mm:ss');
-			const newRow = [row[0],row[1],row[2],row[3],formattedDate,row[5],row[6],row[7]];
+			const newRow = [
+				row[0],
+				row[1],
+				row[2],
+				row[3],
+				formattedDate,
+				row[5],
+				row[6],
+				row[7],
+			];
 			data.push(newRow);
 		});
 		return data;
 	};
 
 	const handleRefreshData = () => {
-		shortData()
-	}
-   
+		shortData();
+	};
+
 	return (
-		<ScrollView style={{backgroundColor: commonStyles.colors.cor1}}>
+		<ScrollView style={styles.scrollView}>
 			<StatusBar
 				hidden={false}
 				backgroundColor={commonStyles.colors.cor2}
@@ -235,27 +304,18 @@ const Companies = props => {
 				/>
 
 				<View style={styles.listView}>
-					<SelectLists
+					<ModalDrop
+						handle={handleSelectCompany}
 						ref={refDataList}
-						placeholder={'Empresas'}
-						setSelected={handleSelectCompany}
-						width={150}
 					/>
-					<SelectLists
+					<ModalDrop
+						handle={reordenar}
 						ref={refOrderList}
-						data={ordenador}
-						placeholder={'Ordenar'}
-						setSelected={reordenar}
-						width={150}
 					/>
 				</View>
-				
+
 				<View>
-					<Tables
-						tableHead={head}
-						widthArr={widthArr}
-						ref={refTabela}
-					/>
+					<Tables tableHead={head} widthArr={widthArr} ref={refTabela} />
 				</View>
 
 				<View>
@@ -263,6 +323,7 @@ const Companies = props => {
 						xAxis={true}
 						yAxis={false}
 						ref={refBarChart}
+						handle={handleBarClick}
 						data={dataChartBar()}
 						domain={{x: [0.5, 3.5]}}
 						colors={[
@@ -274,26 +335,27 @@ const Companies = props => {
 				</View>
 				<TitleTwo title={'MobServer'} />
 				<View>
-					<DataPie height={300} ref={refDataPie} />
+					<DataPie 
+						height={300} 
+						ref={refDataPie}
+						colorScale={[
+							commonStyles.colors.cor2,
+							commonStyles.colors.cor3,
+							commonStyles.colors.cor4
+						]}
+						handle={handlePieClick}
+					/>
 				</View>
 				<View style={styles.cardView}>
 					<Cards
-							ref={refCardMedia}
-							title={'Média'}
-							symbol={' min'}
-							bgcolor={
-								average() <= 5
-									? `${commonStyles.colors.verde}`
-									: average() <= 15
-								? `${commonStyles.colors.cor4}`
-									: `${commonStyles.colors.cor5}`
-							}
+						ref={refCardMedia}
+						title={'Média'}
+						symbol={' min'}
 					/>
 					<Cards
-							ref={refCardDesvio}
-							symbol={' min'}
-							title={'Desvio Padrão'}
-							bgcolor={`${commonStyles.colors.cor3}`}
+						ref={refCardDesvio}
+						symbol={' min'}
+						title={'Desvio Padrão'}
 					/>
 				</View>
 			</View>
@@ -301,10 +363,12 @@ const Companies = props => {
 	);
 };
 
-export default Companies
-
+export default Companies;
 
 const styles = StyleSheet.create({
+	scrollView:{
+		backgroundColor: commonStyles.colors.cor1
+	},
 	container: {
 		backgroundColor: commonStyles.colors.cor1,
 		flex: 1,
@@ -315,8 +379,8 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 	},
 	cardView: {
-		padding:20,
-		flexDirection:'row',
-		justifyContent:'space-around'
-	}
+		padding: 20,
+		flexDirection: 'row',
+		justifyContent: 'space-around',
+	},
 });

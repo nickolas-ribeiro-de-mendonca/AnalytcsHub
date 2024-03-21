@@ -1,34 +1,34 @@
-import React, {useEffect, useRef} from 'react';
+import React, {useEffect, useRef, useLayoutEffect, useState} from 'react';
 import commonStyles from '../commonStyles';
 import axios from 'axios';
 import {server} from '../common';
 import {ScrollView} from 'react-native-gesture-handler';
-import {Dimensions, StyleSheet, View, useWindowDimensions} from 'react-native';
+import {Dimensions, StyleSheet, View} from 'react-native';
 import {Header} from '../components/Header';
 import Tables from '../components/Table';
 import ModalDrop from '../components/ModalDrop';
 import BarCharts from '../components/BarCharts';
 import DataPie from '../components/DataPie';
-import  LineChart  from '../components/LineChart';
-
+import LineChart from '../components/LineChart';
+import { Value } from 'react-native-reanimated';
 
 const EstatisiticaGerais = props => {
 	const initalDataRef = useRef([]);
-    const filteredDataRef = useRef([])
+	const filteredDataRef = useRef([]);
 	const tableDataRef = useRef([]);
-    const dropdownEmpRef = useRef([])
-    const dropdownMonthRef = useRef([])
-    const barChartRef = useRef([])
-    const dataPieRef = useRef([])
-	const lineAppRef = useRef([])
+	const dropdownEmpRef = useRef([]);
+	const dropdownMonthRef = useRef([]);
+	const barChartRef = useRef([]);
+	const dataPieRef = useRef([]);
+	const lineAppRef = useRef([]);
 
-    var emp = 'Empresas'
-    var month = 'Meses'
+	var emp = 'Empresas';
+	var month = 'Meses';
 
 	const getData = async () => {
-        dropdownEmpRef.current.setSelectedOption("Empresas")
-        dropdownMonthRef.current.setSelectedOption("Meses")
-        try {
+		dropdownEmpRef.current.setSelectedOption('Empresas');
+		dropdownMonthRef.current.setSelectedOption('Meses');
+		try {
 			const res = await axios.get(`${server}/estatisticas`);
 			const objToArray = res.data.map(obj => {
 				return Object.keys(obj).map(key => {
@@ -36,7 +36,7 @@ const EstatisiticaGerais = props => {
 				});
 			});
 			initalDataRef.current = objToArray;
-            filteredDataRef.current = objToArray
+			filteredDataRef.current = objToArray;
 		} catch (error) {
 			console.log('Estatisticas Gerais, getdata → ' + error);
 		}
@@ -47,8 +47,9 @@ const EstatisiticaGerais = props => {
 		getData();
 	}, []);
 
+	
 	const getMonths = () => {
-		const list = ["Meses"];
+		const list = ['Meses'];
 		initalDataRef.current.map(array => {
 			const existingItem = list.find(item => item === array[2]);
 			if (!existingItem) {
@@ -59,7 +60,7 @@ const EstatisiticaGerais = props => {
 	};
 
 	const getCompanies = () => {
-		const list = ["Empresas"];
+		const list = ['Empresas'];
 		initalDataRef.current.map(array => {
 			const existingItem = list.find(item => item === array[1]);
 			if (!existingItem) {
@@ -69,36 +70,40 @@ const EstatisiticaGerais = props => {
 		return list;
 	};
 
-    const handleSelectedCompany = value => {
-        emp = value
-        dropdownEmpRef.current.setSelected(value)
-        handleSelect()
-    }
+	const handleSelectedCompany = value => {
+		emp = value;
+		dropdownEmpRef.current.setSelected(value);
+		handleSelect();
+	};
 
-    const handleSelectedMonth =  value => {
-        month = value
-        dropdownMonthRef.current.setSelected(value)
-        handleSelect()
-    }
+	const handleSelectedMonth = value => {
+		month = value;
+		dropdownMonthRef.current.setSelected(value);
+		handleSelect();
+	};
 
-    const handleSelect = () => {
-        if(emp === "Empresas" && month === "Meses"){
-            filteredDataRef.current = initalDataRef.current
-        }
-        if(emp !== "Empresas" && month === "Meses"){
-            filteredDataRef.current = initalDataRef.current.filter( item => item[1] === emp)
-        }
-
-
-
-        if(emp === "Empresas" && month !== "Meses"){
-            filteredDataRef.current = initalDataRef.current.filter( item => item[2] === month)
-        }
-        if(emp !== "Empresas" && month !== "Meses"){
-            filteredDataRef.current = initalDataRef.current.filter(item => item[1] === emp && item[2] === month)
-        }
-        refs()
-    }
+	const handleSelect = () => {
+		if (emp === 'Empresas' && month === 'Meses') {
+			filteredDataRef.current = initalDataRef.current;
+		}
+		if (emp !== 'Empresas' && month === 'Meses') {
+			filteredDataRef.current = initalDataRef.current.filter(
+				item => item[1] === emp,
+			);
+		}
+		if (emp === 'Empresas' && month !== 'Meses') {
+			filteredDataRef.current = initalDataRef.current.filter(
+				item => item[2] === month,
+			);
+		}
+		if (emp !== 'Empresas' && month !== 'Meses') {
+			filteredDataRef.current = initalDataRef.current.filter(
+				item => item[1] === emp && item[2] === month,
+			);
+		}
+		
+		refs();
+	};
 
 	const tableList = () => {
 		const data = [];
@@ -107,7 +112,7 @@ const EstatisiticaGerais = props => {
 			const percent =
 				(100 * row[4]) / (parseFloat(row[3]) + parseFloat(row[4]));
 			const field = percent >= 0 ? percent : 0;
-			const newRow = [row[0],row[1],row[3],row[4],field.toFixed(2)];
+			const newRow = [row[0], row[1], row[3], row[4], field.toFixed(2)];
 			data.push(newRow);
 			dataSorted = data.sort(function (a, b) {
 				return a[0] > b[0] ? 1 : -1;
@@ -115,21 +120,20 @@ const EstatisiticaGerais = props => {
 		});
 		return dataSorted;
 	};
-    const barChart = () => {
-		const data = filteredDataRef.current
-		var newData = [0,0,0]
-        
-		data.map(line => {
-			newData[0] = parseInt(newData[0]) + parseInt(line[5])
-			newData[1] = parseInt(newData[1]) + parseInt(line[6])
-			newData[2] = parseInt(newData[2]) + parseInt(line[7])
-			
-		})
-		return newData
-	}
+	const barChart = () => {
+		const data = filteredDataRef.current;
+		var newData = [0, 0, 0];
 
-    const dataChartBar = () => {
-		const y = barChart()
+		data.map(line => {
+			newData[0] = parseInt(newData[0]) + parseInt(line[5]);
+			newData[1] = parseInt(newData[1]) + parseInt(line[6]);
+			newData[2] = parseInt(newData[2]) + parseInt(line[7]);
+		});
+		return newData;
+	};
+
+	const dataChartBar = () => {
+		const y = barChart();
 		const data = [
 			{x: 'Aberto', y: y[0], fill: commonStyles.colors.cor4},
 			{x: 'Aplicado', y: y[1], fill: commonStyles.colors.azul},
@@ -139,74 +143,122 @@ const EstatisiticaGerais = props => {
 		return data;
 	};
 
-    const dataPie =  () => {
-        var app = 0
-        var agro = 0
-        filteredDataRef.current.map(item => {
-            agro = agro + parseFloat(item[3])
-            app = app + parseFloat(item[4])
-        })
-        const data = [{label: `${agro}\nAgro`, x: agro, y: agro}, {label: `Agronomic\n${app}`, x: 'App', y: app}]
-        return data
-	}	
+	const dataPie = () => {
+		var app = 0;
+		var agro = 0;
+		filteredDataRef.current.map(item => {
+			agro = agro + parseFloat(item[3]);
+			app = app + parseFloat(item[4]);
+		});
+		const data = [
+			{ x: 'Agro', y: agro, label: `${agro} Agro`},
+			{ x: 'Agronomic', y: app, label: `${app} Agronomic`},
+		];
+		return data;
+	};
 
 	const dataLineChart = () => {
-		const dataAgro = []
-		const dataApp = []
-		const yAgro = []
-		const yApp = []
-		const x = getMonths()
-		
-		x.shift()
-		
+		const dataAgro = [];
+		const dataApp = [];
+		const yAgro = [];
+		const yApp = [];
+		const x = getMonths();
+
+		x.shift();
+
 		x.map(month => {
-			let totalAgro = 0
-			let totalApp = 0
+			let totalAgro = 0;
+			let totalApp = 0;
 			filteredDataRef.current.map(line => {
-				if(line[2] === month){
-					totalAgro = totalAgro + parseFloat(line[3])
-					totalApp = totalApp + parseFloat(line[4]) 
+				if (line[2] === month) {
+					totalAgro = totalAgro + parseFloat(line[3]);
+					totalApp = totalApp + parseFloat(line[4]);
 				}
-			})
-			yAgro.push(totalAgro)
-			yApp.push(totalApp)
+			});
+			yAgro.push(totalAgro);
+			yApp.push(totalApp);
+		});
+
+		for (let index = 0; index < x.length; index++) {
+			dataAgro.push({x: x[index], y: yAgro[index]});
+			dataApp.push({x: x[index], y: yApp[index]});
+		}
+		return [dataAgro, dataApp];
+	};
+
+	const handleBarClick = value => {
+		let colNumber = 0;
+		handleSelect()
+
+		switch (value) {
+			case value = "Aberto":
+				colNumber = 5;
+				break;
+			case value = "Aplicado":
+				colNumber = 6;
+				break;
+			case value = "Cancelado":
+				colNumber = 7;
+				break;
+			default:
+				break;
+		}
+		const data = initalDataRef.current.filter((item) =>{
+			return item[colNumber] > 0
 		})
 		
-		for (let index = 0; index < x.length; index++) {
-			dataAgro.push({x: x[index], y: yAgro[index]})
-			dataApp.push({x: x[index], y: yApp[index]})
+		filteredDataRef.current = data
+
+		refs()
+	};
+
+	const handlePieClick = (value) => {
+		let colNumber = 0
+		switch (value) {
+			case value = "Agro":
+				colNumber = 3
+				break;
+			case value = "Agronomic":
+				colNumber = 4
+				break
+			default:
+				break;
 		}
-		return [dataAgro,dataApp]
+		const data = initalDataRef.current.filter((item) =>{
+			return item[colNumber] > 0
+		})
+		filteredDataRef.current = data
+		refs()
 	}
 
 	const handleRefreshData = () => {
-		getData()
-	}
+		getData();
+	};
 
 	const refs = () => {
-        dropdownEmpRef.current.setList(getCompanies())
-        dropdownMonthRef.current.setList(getMonths())
+		dropdownEmpRef.current.setList(getCompanies());
+		dropdownMonthRef.current.setList(getMonths());
 		tableDataRef.current.setLista(tableList());
-        barChartRef.current.setDataBar(dataChartBar())
-        dataPieRef.current.setDataPie(dataPie())
-		lineAppRef.current.setData(dataLineChart())
+		barChartRef.current.setDataBar(dataChartBar());
+		dataPieRef.current.setDataPie(dataPie());
+		lineAppRef.current.setData(dataLineChart());
 	};
-    
-    const windowDimensions = () => {
-        return parseFloat(Dimensions.get('window').width)
-    }
 
-    const tableWidthArr = () => {
-        const width = windowDimensions()
-        return [
-            width*0.1,
-            width*0.3,
-            width*0.15,
-            width*0.15,
-            width*0.2,
-        ]
-    }
-    
+	const windowDimensions = () => {
+		return parseFloat(Dimensions.get('window').width);
+	};
+
+	const tableWidthArr = () => {
+		const width = windowDimensions();
+		return [
+			width * 0.1,
+			width * 0.3,
+			width * 0.15,
+			width * 0.15,
+			width * 0.2,
+		];
+	};
+
 	return (
 		<ScrollView>
 			<View style={styles.container}>
@@ -215,41 +267,41 @@ const EstatisiticaGerais = props => {
 					navigation={props.navigation}
 					onRefreshData={handleRefreshData}
 				/>
-                <View style={styles.drop}>
-                    <ModalDrop
-                        handle={handleSelectedCompany}
-                        ref={dropdownEmpRef}
-                    />
-                    <ModalDrop
-                        ref={dropdownMonthRef}
-                        handle={handleSelectedMonth}
-                    />
-                </View>
+				<View style={styles.drop}>
+					<ModalDrop handle={handleSelectedCompany} ref={dropdownEmpRef} />
+					<ModalDrop ref={dropdownMonthRef} handle={handleSelectedMonth} />
+				</View>
 
 				<Tables
 					tableHead={['WS', 'Empresa', 'Agro', 'App', '%Rec.app']}
 					widthArr={tableWidthArr()}
 					ref={tableDataRef}
-                />
+				/>
 
-                <BarCharts
-                    ref={barChartRef}
+				<BarCharts
+					ref={barChartRef}
 					xAxis={true}
 					yAxis={false}
 					domain={{x: [0.5, 3.5]}}
-                />
+					handle={handleBarClick}
+					width={windowDimensions()}
+				/>
 
-                <View>
-			    	<DataPie
-                    	height={300} 
+				<View>
+					<DataPie
+						height={300}
 						ref={dataPieRef}
-                    	colorScale={[commonStyles.colors.verde, commonStyles.colors.azul]}
-                    />
-			    </View>
+						colorScale={[
+							commonStyles.colors.verde,
+							commonStyles.colors.azul,
+						]}
+						handle={handlePieClick}
+					/>
+				</View>
 				<LineChart
-					ref={lineAppRef} 
-					colors ={[commonStyles.colors.verde, commonStyles.colors.azul]}
-					legend={["Agro","A3"]}
+					ref={lineAppRef}
+					colors={[commonStyles.colors.verde, commonStyles.colors.azul]}
+					legend={['Agro', 'Agronomic']}
 					legendX={150}
 					legendY={300}
 				/>
@@ -265,7 +317,7 @@ const styles = StyleSheet.create({
 		backgroundColor: commonStyles.colors.cor1,
 		flex: 1,
 	},
-    drop: {
+	drop: {
 		flexDirection: 'row',
 		justifyContent: 'space-around',
 	},

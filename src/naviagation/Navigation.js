@@ -18,19 +18,19 @@ const MyTabs = props => {
 		<Tab.Navigator
 			style={{backgroundColor: commonStyles.colors.cor1}}
 			tabBarPosition="bottom"
-			initialRouteName="Estatistica Gerais"
+			initialRouteName="Empresas"
 			screenOptions={({route}) => ({
 				tabBarStyle: {
 					backgroundColor: commonStyles.colors.cor2,
 					height: 65,
 					borderTopRightRadius: 15,
 					borderTopLeftRadius: 15,
+					alignItems:'center'
 				},
 				tabBarItemStyle: {width: 140},
 				tabBarScrollEnabled: true,
 				tabBarLabelStyle: {fontSize: 15, textTransform:'none'},
 				tabBarActiveTintColor: commonStyles.colors.white,
-				tabBarInactiveTintColor: commonStyles.colors.lightGray,
 				tabBarIcon: ({focused, color}) => {
 					let iconName;
 

@@ -72,9 +72,7 @@ const ModalDrop = (props, ref) => {
 };
 
 const styles = StyleSheet.create({
-	view:{ 
-        backgroundColor: 'rgba(255, 255, 255, 0.07)',
-	},
+	
 	dropdown: {
 		width: 150,
 		height: 40,
@@ -84,6 +82,7 @@ const styles = StyleSheet.create({
 		justifyContent: 'center',
 	},
 	dropdownText: {
+		textAlign:'left',
 		fontSize: 15,
 		color: commonStyles.colors.white,
 		fontFamily: commonStyles.fontFamily,

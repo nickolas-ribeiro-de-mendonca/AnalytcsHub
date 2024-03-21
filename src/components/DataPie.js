@@ -1,28 +1,46 @@
 import React, {forwardRef, useState, useImperativeHandle} from 'react';
-import {VictoryPie} from 'victory-native';
-
+import {View} from 'react-native';
+import {VictoryChart, VictoryPie} from 'victory-native';
 
 const DataPie = (props, ref) => {
-    const [dataPie, setDataPie] = useState([]);
-	const {height,colorScale} = props;
+	const [dataPie, setDataPie] = useState([]);
+	const {height, colorScale, handle} = props;
 	useImperativeHandle(ref, () => ({
-		setDataPie
+		setDataPie,
 	}));
+
+	const handlePieClick = (value) => {
+		handle(value)
+	}
+
 	return (
-		<VictoryPie
-			data={dataPie}
-			colorScale={colorScale}
-			height={height}
+		<View style={{alignItems: 'center'}}>
 			
-			style={{
-				
-				labels: {
-					fill: 'white',
-					fontSize: 12,
-					textAnchor: 'middle',
-				},
-			}}
-		/>
+				<VictoryPie
+					data={dataPie}
+					colorScale={colorScale}
+					height={height}
+					style={{
+						labels: {
+							fill: 'white',
+							fontSize: 12,
+							textAnchor: 'middle',
+						},
+					}}
+					events={[
+						{
+							target:'data',
+							eventHandlers: {
+								onPressIn:  (event, key, a) =>{
+									handlePieClick(key.datum.xName)
+								}
+							}
+					
+						}
+					]}
+				/>
+			
+		</View>
 	);
 };
 

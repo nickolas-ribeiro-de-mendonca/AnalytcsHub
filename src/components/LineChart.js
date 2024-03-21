@@ -37,58 +37,65 @@ const LineChart = (props, ref) => {
 	};
 
 	return (
-		<ScrollView horizontal={true}>
-			<VictoryChart
-				padding={{bottom: 100, left: 50, right: 30, top: 10}}
-				domain={{y: [0, `${yDomain()}`]}}
-				width={widht}
-				height={350}
-				domainPadding={10}
-            >
-                <VictoryLegend
-                    y={legendY}
-                    x={legendX}
-                    gutter={30}
-                    orientation="horizontal"
-                    data={legend.map((item, index) => ({
-                        name: item,
-                        symbol: {fill: colors[index]},
-                        labels: {fill: commonStyles.colors.white},
-                    }))}
-                />
-				<VictoryAxis
-					style={{
-						axis: {stroke: commonStyles.colors.white},
-						ticks: {stroke: commonStyles.colors.white},
-						tickLabels: {fill: commonStyles.colors.white, fontSize: 10},
-					}}
-				/>
-				<VictoryAxis
-					dependentAxis
-					style={{
-						axis: {stroke: commonStyles.colors.white},
-						ticks: {stroke: commonStyles.colors.white},
-						tickLabels: {fill: commonStyles.colors.white, fontSize: 10},
-					}}
-				/>
-				{data.map((line, item = 0) => {
-					return (
-						<VictoryLine
-							width={1000}
-							labelComponent={<VictoryLabel dx={0} />}
-							style={{
-								data: {stroke: colors[item], strokeWidth: 1.5},
-								labels: {fontSize: 10, fill: 'white'},
-							}}
-							data={line}
-							labels={({datum}) => datum.y}
-							key={line[0]}
-						/>
-					);
-					item++;
-				})}
-			</VictoryChart>
-		</ScrollView>
+		<View style={{alignItems: 'center'}}>
+			<ScrollView horizontal={true}>
+				<VictoryChart
+					padding={{bottom: 100, left: 50, right: 30, top: 10}}
+					domain={{y: [0, `${yDomain()}`]}}
+					width={widht}
+					height={350}
+					domainPadding={10}>
+					<VictoryLegend
+						y={legendY}
+						x={legendX}
+						gutter={30}
+						orientation="horizontal"
+						data={legend.map((item, index) => ({
+							name: item,
+							symbol: {fill: colors[index]},
+							labels: {fill: commonStyles.colors.white},
+						}))}
+					/>
+					<VictoryAxis
+						style={{
+							axis: {stroke: commonStyles.colors.white},
+							ticks: {stroke: commonStyles.colors.white},
+							tickLabels: {
+								fill: commonStyles.colors.white,
+								fontSize: 10,
+							},
+						}}
+					/>
+					<VictoryAxis
+						dependentAxis
+						style={{
+							axis: {stroke: commonStyles.colors.white},
+							ticks: {stroke: commonStyles.colors.white},
+							tickLabels: {
+								fill: commonStyles.colors.white,
+								fontSize: 10,
+							},
+						}}
+					/>
+					{data.map((line, item = 0) => {
+						return (
+							<VictoryLine
+								width={1000}
+								labelComponent={<VictoryLabel dx={0} />}
+								style={{
+									data: {stroke: colors[item], strokeWidth: 1.5},
+									labels: {fontSize: 10, fill: 'white'},
+								}}
+								data={line}
+								labels={({datum}) => datum.y}
+								key={line[0]}
+							/>
+						);
+						item++;
+					})}
+				</VictoryChart>
+			</ScrollView>
+		</View>
 	);
 };
 

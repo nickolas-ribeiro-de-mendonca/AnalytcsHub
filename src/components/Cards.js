@@ -1,17 +1,20 @@
-import React, { forwardRef, useImperativeHandle, useState} from 'react';
+import React, { forwardRef, useEffect, useImperativeHandle, useState} from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 import commonStyles from '../commonStyles';
 
 const Cards = (props, ref) => {
     const [dataCard, setDataCard] = useState()
-    const {title,bgcolor,symbol} = props
+    const [color, setColor] = useState(commonStyles.colors.cor2)
+    const {title,symbol} = props
+
+    
     useImperativeHandle(ref, ()=>({
-        setDataCard
+        setDataCard,
+        setColor
     }))
-
-
+    
 	return (
-		<View style={[styles.container,{backgroundColor: bgcolor}]}>
+		<View style={[styles.container,{backgroundColor: color}]}>
             <Text style={styles.title}>
                 {title}
             </Text>

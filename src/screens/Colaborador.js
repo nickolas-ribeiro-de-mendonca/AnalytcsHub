@@ -23,6 +23,8 @@ const Situation = (props) => {
 	const tableTwoRef = useRef([])	
 	const cardDataExpRef = useRef()
 	const cardDataUsers = useRef()
+	let emp = 'Empresas'
+	let user = 'Usuários'
 
 	const getAppointmentsLabor = async () => {
 		dropdownEmpListRef.current.setSelectedOption("Empresas")
@@ -39,6 +41,7 @@ const Situation = (props) => {
 			filteredDataRef.current = objToArray
 			laborData()
 			renderizar()
+			dropdownUserListRef.current.setList(initialDropdownUser())
 			
 		} catch (error) {
 			console.log('getAppointmentLabor'+ error)
@@ -84,9 +87,10 @@ const Situation = (props) => {
 
 	const tableOneData = () => {
 		const data = filteredDataRef.current
+
 		const newData = data.map(line => {
-			let partesDoNome = line[4].trim().split(/\s+/);
-			let novoNome = partesDoNome.slice(0, 2).join(" ");
+			let partesDoNome = line[4].trim().split(/\s+/) 
+			let novoNome =  partesDoNome.slice(0, 2).join(" ") 
 			return [line[0],line[3],novoNome,line[11],line[10].toFixed(2)]
 		})
 		return newData
@@ -117,60 +121,75 @@ const Situation = (props) => {
 	}
 	const cardOne = () => {
 		const data = filteredDataRef.current
-		var exportado = 0
-		var total = 0
+		let exportado = 0
+		let total = 0
 		data.map(exp => {
-			total = parseInt(exp[7]) + parseInt(exp[6]) +parseInt(exp[7])
-			exportado = parseInt(exp[7])	
+			total = total + parseInt(exp[11])
+			exportado = exportado + parseInt(exp[7])	
 		})
 		if(total > 0){
 			return (exportado/total * 100).toFixed(2)
 		}
 		return 0
 	}
+
+	const color = () => {
+		const expt = cardOne()
+		let color = ''
+		if(expt >= 70){
+			color = commonStyles.colors.verde
+		}else if(expt >= 50){
+			color = commonStyles.colors.amarelo
+		}else {
+			color = commonStyles.colors.cor5
+		}
+		return color
+	}
+
 	const cardTwo = () => {
 		const data = filteredDataRef.current
 		return data.length
 	}
 	
 	const handleSelectCompany = value => {
-		var newLaborList = []
-		if (value !== 'Empresas') {
-			const newData = initialDataRef.current.filter(item => item[1] === value);
-			filteredDataRef.current = newData
-			newLaborList = newData.map(labor => {
-				 return labor[4]
-			})
-			
-		} else {
-			filteredDataRef.current = initialDataRef.current
-			newLaborList =  initialDropdownUser()
-			getAppointmentsLabor()
-		}
-		renderizar()
-		dropdownUserListRef.current.setList(newLaborList)
+		emp = value
+		handleSelect()
 	};
 	
 
 	const handleSlectedUser = value => {		
-		var oldLaborList = dropdownUserListRef.current.getList()
-		if (value !== 'Usuários') {
-			const empSelected = dropdownEmpListRef.current.getSelected()
-			const empCodigo = (initialDataRef.current.filter(item => item[4] == value))[0][0]
-			const usuNome = (initialDataRef.current.filter(item => item[4] == value))[0][4]
-			const newData = initialDataRef.current.filter(item => item[4] === usuNome);
-			filteredDataRef.current = newData
-			if(empSelected !== "Empresas"){
-				oldLaborList = initialDataRef.current.filter(item => item[0] === empCodigo).map(labor => {
-					return labor[4]
-				})
-			}
-		}else {
+		user = value
+		handleSelect()
+	};
+
+	const handleSelect = () => {
+		if( emp === 'Empresas' && user === 'Usuários') {
 			filteredDataRef.current = initialDataRef.current
+			dropdownUserListRef.current.setList(initialDropdownUser())
+		}else if (emp !== 'Empresas' && user === 'Usuários'){
+			filteredDataRef.current = initialDataRef.current.filter(
+				item => item[1] === emp
+			)
+			dropdownUserListRef.current.setList(userListFiltered())
+		}else if (emp === 'Empresas' && user !== 'Usuários'){
+			filteredDataRef.current = initialDataRef.current.filter(
+				item => item[4] === user
+			)
+		}else if (emp !== 'Empresas' && user !== 'Usuários'){
+			filteredDataRef.current = initialDataRef.current.filter(
+				item => item[1] === emp && item[4] === user
+			)
+			
 		}
 		renderizar()
-		dropdownUserListRef.current.setList(oldLaborList)
-	};
+	}
+
+	const userListFiltered = () => {
+		let nameList = []
+		nameList.push("Usuários")
+		filteredDataRef.current.map(item => nameList.push(item[4]))
+		return nameList
+	}
 
 	const getWidthArr = () => {
 		const windowWidth = Dimensions.get('window').width;
@@ -188,20 +207,44 @@ const Situation = (props) => {
 		return data;
 	};
 
+	const handleClickBar = (value) =>{
+		let colNumber = 0
+		switch (value) {
+			case value = "Confirmado":
+				colNumber = 5
+			break;
+			case value = "Calculado":
+				colNumber = 6
+			break
+			case value = "Exportado":
+				colNumber = 6
+			break
+			default:
+				break;
+		}
+		const data = filteredDataRef.current.filter(item => {
+			if(item[colNumber] > 0){
+				return item
+			}
+		})
+		filteredDataRef.current = data
+		renderizar()
+	}
+
 	const renderizar = () => {
 		dropdownEmpListRef.current.setList(dropdownEmp())
-		dropdownUserListRef.current.setList(initialDropdownUser())
 		tableOneRef.current.setLista(tableOneData())
 		tableTwoRef.current.setLista([tableTowData()])
 		barChartRef.current.setDataBar(dataChartBar())
 		cardDataExpRef.current.setDataCard(cardOne())
+		cardDataExpRef.current.setColor(color())
 		cardDataUsers.current.setDataCard(cardTwo())
 	}
 	const handleRefreshData = () => {
 		getAppointmentsLabor()
 	}
 	return (
-		<ScrollView>
+		<ScrollView style={styles.scrollView}>
 			<View style={styles.container}>
 				<Header 
 					name={'Apontamento por Apontador'} 
@@ -211,14 +254,10 @@ const Situation = (props) => {
 
 				<View style={styles.drop}>
 					<ModalDrop
-						initialOption={"Empresas"}
-						initialScrollIndex={0}
 						handle={handleSelectCompany}
 						ref={dropdownEmpListRef}
 					/>
 					<ModalDrop
-						initialOption={"Usuários"}
-						initialScrollIndex={0}
 						handle={handleSlectedUser}
 						ref={dropdownUserListRef}
 					/>
@@ -247,19 +286,14 @@ const Situation = (props) => {
 					xAxis={true}
 					yAxis={false}
 					domain={{x: [0.5, 3.5]}}
+					handle={handleClickBar}
 				/>
 				<View style={styles.cards}>
 					<Cards
 						title={'Dados Exportados'}
 						ref={cardDataExpRef}
 						symbol={'%'}
-						bgcolor={
-							cardDataExpRef >= 70
-								? commonStyles.colors.verde
-									: cardDataExpRef >= 50
-									? commonStyles.colors.cor4
-								: commonStyles.colors.cor5
-						}
+						
 					/>
 					<Cards
 						title={'Usuários'}
@@ -275,6 +309,9 @@ const Situation = (props) => {
 export default Situation;
 
 const styles = StyleSheet.create({
+	scrollView:{
+		backgroundColor: commonStyles.colors.cor1
+	},
 	container: {
 		backgroundColor: commonStyles.colors.cor1,
 		flex: 1,
