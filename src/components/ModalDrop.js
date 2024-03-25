@@ -1,9 +1,8 @@
-import React, {forwardRef, useState, useImperativeHandle, useEffect} from 'react';
+import React, {forwardRef, useState, useImperativeHandle} from 'react';
 import commonStyles from '../commonStyles';
 import ModalDropdown from 'react-native-modal-dropdown';
-import {Animated, StyleSheet, View} from 'react-native';
+import { StyleSheet, View} from 'react-native';
 import { Text } from 'react-native';
-
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome';
 import {faChevronDown} from '@fortawesome/free-solid-svg-icons/faChevronDown';
 
