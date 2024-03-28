@@ -2,20 +2,16 @@ import React, {useEffect, useRef, useState} from 'react';
 import {View, StyleSheet, ScrollView, StatusBar} from 'react-native';
 import commonStyles from '../commonStyles';
 import {Header} from '../components/Header';
-import SelectLists from '../components/SelectList';
 import Tables from '../components/Table';
 import BarCharts from '../components/BarCharts';
 import {TitleTwo} from '../components/Titles';
-import moment, { min } from 'moment';
+import moment  from 'moment';
 import axios from 'axios';
-
 import {server} from '../common';
 import DataPie from '../components/DataPie';
-import {noAuto} from '@fortawesome/fontawesome-svg-core';
 import Cards from '../components/Cards';
-import { validatePathConfig } from '@react-navigation/native';
-import { filterConfig } from 'react-native-gesture-handler/lib/typescript/handlers/gestureHandlerCommon';
 import ModalDrop from '../components/ModalDrop';
+import TableData from '../components/TableData';
 
 const Companies = props => {
 	const refInitialData = useRef([]);
@@ -25,6 +21,7 @@ const Companies = props => {
 	const refBarChart = useRef();
 	const refDataPie = useRef([]);
 	const selectedCompanyRef = useRef(null);
+	const refTableData = useRef([])
 	const refOrderList = useRef([]);
 	const refCardMedia = useRef();
 	const refCardDesvio = useRef();
@@ -72,8 +69,8 @@ const Companies = props => {
 			const lastSinc = new Date(item[4]).getTime();
 			const datadiff = (now - lastSinc) / (1000 * 60);
 			if (datadiff <= 5) normal++;
-			if (datadiff <= 15 && datadiff > 5) atrasado++;
-			if (datadiff > 15) parado++;
+			if (datadiff < 15 && datadiff > 5) atrasado++;
+			if (datadiff >= 15) parado++;
 		});
 		return [normal, atrasado, parado];
 	};
@@ -215,7 +212,6 @@ const Companies = props => {
 			}),
 		);
 	};
-	console.log(dataPie())
 
 	const handleBarClick = (value) => {
 		let minStart = 0;
@@ -255,6 +251,7 @@ const Companies = props => {
 
  	const ListaAlterada = () => {
 		refTabela.current.setLista(formatedList());
+		refTableData.current.setData(formatedList())
 		refBarChart.current.setDataBar(dataChartBar());
 		refDataPie.current.setDataPie(dataPie());
 		refOrderList.current.setList(ordenador());
@@ -313,7 +310,13 @@ const Companies = props => {
 						ref={refOrderList}
 					/>
 				</View>
-
+				<View>
+					<TableData
+						ref={refTableData}
+						headerStyle={{justifyContent:'center'}}
+						headerTitle={['WS','Codinome','Apelido','Sincronização','MobServer']}
+					/>
+				</View>
 				<View>
 					<Tables tableHead={head} widthArr={widthArr} ref={refTabela} />
 				</View>
