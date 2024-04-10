@@ -20,22 +20,11 @@ const Companies = props => {
 	const refTabela = useRef();
 	const refBarChart = useRef();
 	const refDataPie = useRef([]);
-	const selectedCompanyRef = useRef(null);
-	const refTableData = useRef([])
 	const refOrderList = useRef([]);
 	const refCardMedia = useRef();
 	const refCardDesvio = useRef();
-	const head = [
-		'WS',
-		'Empresa',
-		'CNPJ',
-		'Inscrição',
-		'Ultima Sinc.',
-		'Código Agro',
-		'MobServer',
-		'Apelido',
-	];
-	const widthArr = [50, 250, 150, 150, 200, 50, 100, 100];
+	const head = ['WS','Empresa','Ultima Sinc.','MobServer'];
+	const widthArr = [50, 150, 150, 150];
 
 	const shortData = async () => {
 		refDataList.current.setSelectedOption("Empresas")
@@ -143,7 +132,7 @@ const Companies = props => {
 		tableData.forEach(item => {
 			const existingItem = data.find(obj => obj === item[1]);
 			if (!existingItem) {
-				data.push(item[1]);
+				data.push(item[7]);
 			}
 		});
 		return data;
@@ -152,7 +141,7 @@ const Companies = props => {
 	const handleSelectCompany = value => {
 		if (value !== 'Empresas') {
 			const foundArray = refInitialData.current.filter(
-				item => item[1] === value,
+				item => item[7] === value,
 			);
 			refFilteredData.current = foundArray;
 		} else {
@@ -251,7 +240,6 @@ const Companies = props => {
 
  	const ListaAlterada = () => {
 		refTabela.current.setLista(formatedList());
-		refTableData.current.setData(formatedList())
 		refBarChart.current.setDataBar(dataChartBar());
 		refDataPie.current.setDataPie(dataPie());
 		refOrderList.current.setList(ordenador());
@@ -264,16 +252,12 @@ const Companies = props => {
 	const formatedList = () => {
 		const data = [];
 		refFilteredData.current.map(row => {
-			const formattedDate = moment(row[4]).format('DD/MM/YY - HH:mm:ss');
+			const formattedDate = moment(row[4]).format('DD/MM/YY HH:mm:ss');
 			const newRow = [
 				row[0],
-				row[1],
-				row[2],
-				row[3],
-				formattedDate,
-				row[5],
-				row[6],
 				row[7],
+				formattedDate,
+				row[6],
 			];
 			data.push(newRow);
 		});
@@ -310,13 +294,7 @@ const Companies = props => {
 						ref={refOrderList}
 					/>
 				</View>
-				<View>
-					<TableData
-						ref={refTableData}
-						headerStyle={{justifyContent:'center'}}
-						headerTitle={['WS','Codinome','Apelido','Sincronização','MobServer']}
-					/>
-				</View>
+	
 				<View>
 					<Tables tableHead={head} widthArr={widthArr} ref={refTabela} />
 				</View>

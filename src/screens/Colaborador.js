@@ -57,8 +57,8 @@ const Situation = (props) => {
 		const data = []
 		data.push('Empresas')
 		initialData.forEach(emp => {
-			const existingItem = data.find(element => element === emp[1])
-			if(!existingItem) data.push(emp[1])
+			const existingItem = data.find(element => element === emp[2])
+			if(!existingItem) data.push(emp[2])
 		})
 		
 		return data
@@ -168,7 +168,7 @@ const Situation = (props) => {
 			dropdownUserListRef.current.setList(initialDropdownUser())
 		}else if (emp !== 'Empresas' && user === 'Usuários'){
 			filteredDataRef.current = initialDataRef.current.filter(
-				item => item[1] === emp
+				item => item[2] === emp
 			)
 			dropdownUserListRef.current.setList(userListFiltered())
 		}else if (emp === 'Empresas' && user !== 'Usuários'){
@@ -177,7 +177,7 @@ const Situation = (props) => {
 			)
 		}else if (emp !== 'Empresas' && user !== 'Usuários'){
 			filteredDataRef.current = initialDataRef.current.filter(
-				item => item[1] === emp && item[4] === user
+				item => item[2] === emp && item[4] === user
 			)
 			
 		}
@@ -267,6 +267,10 @@ const Situation = (props) => {
 					tableHead={["WS", "ID", "Apontador", "Apontamentos", "Tempo de Envio"]}
 					widthArr={[48, 48, 95, 95, 95]}
 					ref={tableOneRef}
+					colNumber={4}					
+					limits={[1,2]}
+					colors={[commonStyles.colors.verde, 'white', commonStyles.colors.cor5]}
+					
 				/>
 
 				<TitleTwo title={'Totalizadores'} />

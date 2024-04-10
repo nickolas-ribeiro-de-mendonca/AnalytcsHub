@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useLayoutEffect, useState} from 'react';
+import React, {useEffect, useRef} from 'react';
 import commonStyles from '../commonStyles';
 import axios from 'axios';
 import {server} from '../common';
@@ -10,7 +10,7 @@ import ModalDrop from '../components/ModalDrop';
 import BarCharts from '../components/BarCharts';
 import DataPie from '../components/DataPie';
 import LineChart from '../components/LineChart';
-import { Value } from 'react-native-reanimated';
+
 
 const EstatisiticaGerais = props => {
 	const initalDataRef = useRef([]);
@@ -40,6 +40,7 @@ const EstatisiticaGerais = props => {
 		} catch (error) {
 			console.log('Estatisticas Gerais, getdata → ' + error);
 		}
+		
 		refs();
 	};
 
@@ -56,6 +57,8 @@ const EstatisiticaGerais = props => {
 				list.push(array[2]);
 			}
 		});
+		
+		
 		return list;
 	};
 
@@ -203,7 +206,7 @@ const EstatisiticaGerais = props => {
 			default:
 				break;
 		}
-		const data = initalDataRef.current.filter((item) =>{
+		const data = filteredDataRef.current.filter((item) =>{
 			return item[colNumber] > 0
 		})
 		
@@ -224,7 +227,7 @@ const EstatisiticaGerais = props => {
 			default:
 				break;
 		}
-		const data = initalDataRef.current.filter((item) =>{
+		const data = filteredDataRef.current.filter((item) =>{
 			return item[colNumber] > 0
 		})
 		filteredDataRef.current = data

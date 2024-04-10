@@ -5,7 +5,7 @@ export default {
       cor2: '#1B263B',
       cor3: '#415A77',
       cor4: '#EE9B00', 
-      cor5: '#AE2012',
+      cor5: '#FE4A49',
       cor6: '#9B2226',
       white: '#FBFCFF',
       lightGray: '#666666',

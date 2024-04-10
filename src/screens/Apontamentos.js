@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef} from 'react';
 import {View, StyleSheet, ScrollView} from 'react-native';
 import {tableData} from '../situacaoData';
 import Tables from '../components/Table';
@@ -35,7 +35,6 @@ const SituationApt = props => {
 	const tableHead = [
 		'WS',
 		'Empresa',
-		'Apelido',
 		'Confirmado',
 		'Cálculado',
 		'Exportado',
@@ -43,7 +42,7 @@ const SituationApt = props => {
 		'Editado',
 		'Total',
 	];
-	const widthArr = [50, 200, 100, 100, 100, 100, 100, 100, 100];
+	const widthArr = [50, 120, 100, 100, 100, 100, 100, 100];
 
 	const getAppointments = async () => {
 		selectListRef.current.setSelectedOption('Empresas');
@@ -71,12 +70,13 @@ const SituationApt = props => {
 
 	const selectListEmp = () => {
 		const initialData = initialDataRef.current;
+		
 		const finalData = [];
 		finalData.push('Empresas');
 		initialData.forEach(item => {
-			const existingItem = finalData.find(obj => obj.value === item[1]);
+			const existingItem = finalData.find(obj => obj.value === item[2]);
 			if (!existingItem) {
-				finalData.push(item[1]);
+				finalData.push(item[2]);
 			}
 		});
 		return finalData;
@@ -85,7 +85,7 @@ const SituationApt = props => {
 	const handleSelect = value => {
 		if (value !== 'Empresas') {
 			const foundArray = initialDataRef.current.filter(
-				item => item[1] === value,
+				item => item[2] === value,
 			);
 			filteredDataRef.current = foundArray;
 			selectedEmpRef.current = value;
@@ -122,7 +122,8 @@ const SituationApt = props => {
 	};
 	const validAppointments = () => {
 		const data = totals();
-		return data[0] + data[1] + data[2];
+		const tot = data[0] + data[1] + data[2]
+		return tot.toLocaleString('pt-BR');
 	};
 	const dataChartBar = () => {
 		const x = totals();
@@ -148,12 +149,14 @@ const SituationApt = props => {
 
 	const setTable = () => {
 		const data = filteredDataRef.current;
+		const finalData = []
 		if (data) {
 			data.forEach(item => {
 				if (item[7] > item[6]) item[7] = item[7] - item[6];
+				finalData.push([item[0],item[2],item[3],item[4],item[5],item[6],item[7],item[8]])
 			});
 		}
-		return data;
+		return finalData;
 	};
 
 	const totals = () => {

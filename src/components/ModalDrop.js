@@ -49,7 +49,7 @@ const ModalDrop = (props, ref) => {
                 saveScrollPosition={false}
                 showsVerticalScrollIndicator={false}
                 onSelect={onSelect}
-				dropdownTextHighlightStyle={{color: commonStyles.colors.white}}
+				dropdownTextHighlightStyle={{color: commonStyles.colors.lightGray}}
 				style={styles.dropdown}
 				textStyle={styles.dropdownText}
 				dropdownStyle={styles.dropdownDropdown}
@@ -62,7 +62,7 @@ const ModalDrop = (props, ref) => {
 				<FontAwesomeIcon
 						icon={faChevronDown}
 						size={12}
-						color={commonStyles.colors.white}
+						color={commonStyles.colors.lightGray}
 					/>
 			</View>
 			</ModalDropdown>
@@ -75,9 +75,9 @@ const styles = StyleSheet.create({
 	dropdown: {
 		width: 150,
 		height: 40,
-		borderWidth: 1,
-		borderColor: commonStyles.colors.white,
-		borderRadius: 5,
+		borderWidth: 0.7,
+		borderColor: commonStyles.colors.lightGray,
+		borderRadius: 7,
 		justifyContent: 'center',
 	},
 	dropdownText: {
@@ -91,10 +91,10 @@ const styles = StyleSheet.create({
 		width: 148,
 		height: 'auto',
 		maxHeight: 230,
-		borderColor: commonStyles.colors.white,
+		borderColor: commonStyles.colors.lightGray,
 		borderWidth: 1,
 		borderRadius: 5,
-		marginTop: 4,
+		marginTop: 10,
 		alignItems: 'center',
 		justifyContent: 'center',
 		backgroundColor: commonStyles.colors.cor1,
